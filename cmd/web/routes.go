@@ -11,5 +11,5 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/", app.home)
 
-	return app.logRequest(router)
+	return app.logRequest(secureHeaders(router))
 }
