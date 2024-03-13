@@ -15,7 +15,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("port", ":8080", "HTTP Network Address")
-	dsn := flag.String("dsn", "web:web24pass_@@/devjobs?parseTime=true", "MySQL data source name")
+	// dsn := flag.String("dsn", "web:web24pass_@@/devjobs?parseTime=true", "MySQL data source name")
 
 	flag.Parse()
 
@@ -41,7 +41,7 @@ func main() {
 		WriteTimeout: 5 * (time.Second),
 	}
 
-	logger.Info("Starting server, listening in port", "port", addr)
+	logger.Info("Starting server, listening in port", "port", *addr)
 
 	err := srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	logger.Error(err.Error())
