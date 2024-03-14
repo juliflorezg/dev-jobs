@@ -11,5 +11,5 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/", app.home)
 
-	return app.logRequest(secureHeaders(router))
+	return app.recoverPanic(app.logRequest(secureHeaders(router)))
 }
