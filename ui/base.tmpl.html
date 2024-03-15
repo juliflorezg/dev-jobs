@@ -1,0 +1,51 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{template "title" .}} - devjobs</title>
+    <!-- we use the static files that the server provides for css and icon -->
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <link
+      rel="shortcut icon"
+      href="/static/img/favicon.ico"
+      type="image/x-icon"
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700"
+    /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">devjobs</a></h1>
+      <div class="toggle-theme-container">
+        <img src="/static/media/icon-sun.9422c153.svg" alt="light mode icon" />
+        <button
+          class="toggle-theme-container__button"
+          data-active-theme="light"
+        ></button>
+        <img src="/static/media/icon-moon.038e80ca.svg" alt="dark mode icon" />
+      </div>
+    </header>
+    {{template "nav" .}}
+    <main>
+      <!-- Display the flash message if one exists -->
+      {{with .Flash}}
+      <div class="flash">{{.}}</div>
+      {{end}} {{template "main" .}}
+    </main>
+    <footer>
+      Powered by <a href="https://golang.org/">Go</a> - {{.CurrentYear}}
+    </footer>
+    <!-- script is also provided by the same server as a static file -->
+    <script src="/static/js/main.js" type="text/javascript"></script>
+  </body>
+</html>
+{{end}}
