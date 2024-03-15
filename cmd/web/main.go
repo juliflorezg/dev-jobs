@@ -6,11 +6,13 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"text/template"
 	"time"
 )
 
 type application struct {
-	logger *slog.Logger
+	logger        *slog.Logger
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -23,8 +25,15 @@ func main() {
 		AddSource: true,
 	}))
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
 	app := &application{
-		logger: logger,
+		logger:        logger,
+		templateCache: templateCache,
 	}
 
 	tlsConfig := &tls.Config{
@@ -43,7 +52,7 @@ func main() {
 
 	logger.Info("Starting server, listening in port", "port", *addr)
 
-	err := srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	logger.Error(err.Error())
 	os.Exit(1)
 
