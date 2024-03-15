@@ -1,0 +1,23 @@
+{{define "title"}}Home{{end}} {{define "main"}} {{if .JobPosts}}
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Created</th>
+      <th>ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .JobPosts}}
+    <tr>
+      <td><a href="/snippet/view/{{.ID}}">{{.Title}}</a></td>
+      <!-- use of template function registered in newTemplateCache fn -->
+      <td>{{humanDate .Created}}</td>
+      <td>#{{.ID}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p>There's nothing to see here yet!</p>
+{{end}} {{end}}
