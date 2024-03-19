@@ -1,0 +1,99 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  font-family: 'Ubuntu Mono', monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  line-height: 1.5;
+  background-color: #f1f3f6;
+  color: #34495e;
+  overflow-y: scroll;
+}
+
+header {
+  height: 15%;
+  background-image: url('/static/img/bg-pattern-header.svg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline: 5%;
+}
+
+.wrapper {
+  margin: 0 auto;
+  height: 40%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1440px;
+}
+
+.logo-container,
+.toggle-theme-container {
+  height: 100%;
+}
+
+#company-title {
+  display: none;
+}
+
+.logo-container img {
+  height: 50%;
+  transform: translateY(50%);
+}
+
+.toggle-theme-container img,
+.toggle-theme-container button {
+  height: 40%;
+}
+
+.toggle-theme-container {
+  /* width: 230px; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-theme-container__button {
+  position: relative;
+  width: 3.5rem;
+  border-radius: 22px;
+  background-color: #ffffff;
+  transition: 0.2s linear;
+  border-width: 0;
+}
+.toggle-theme-container__button::before {
+  content: '';
+  display: inline-block;
+  height: 60%;
+  aspect-ratio: 1;
+  background-color: purple;
+  border-radius: 100%;
+  position: absolute;
+  top: 20%;
+  left: 9%;
+  transition: 0.2s linear;
+}
+
+@media screen and (min-width: 768px) {
+  header {
+    background-image: url('/static/img/bg-pattern-header-desktop.svg');
+  }
+
+  .logo-container img {
+    height: 70%;
+    transform: translateY(30%);
+  }
+}
