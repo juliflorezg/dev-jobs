@@ -6,11 +6,13 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/juliflorezg/dev-jobs/internal/models"
 	"github.com/juliflorezg/dev-jobs/ui"
 )
 
 type templateData struct {
 	CurrentYear int
+	JobPosts    []models.JobPost
 }
 
 func humanDate(t time.Time) string {
