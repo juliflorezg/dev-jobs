@@ -1,11 +1,22 @@
-{{define "title"}}Home{{end}} {{define "main"}}
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Created</th>
-      <th>ID</th>
-    </tr>
-  </thead>
-</table>
+{{define "title"}}Home{{end}} 
+{{define "main"}} 
+{{if .JobPosts}}
+<div class="container">
+  {{range .JobPosts}}
+  <div>
+    <p>#{{.ID}}</p>
+    <p>{{.Company.Name}}</p>
+    <div>{{.Company.LogoSVG}}</div>
+    <p>{{.PostedAt}}</p>
+    <p>{{.Contract}}</p>
+    <p>{{.Position}}</p>
+    <p>{{.Location}}</p>
+  </div>
+  <br />
+  <hr />
+  {{end}}
+</div>
+{{else}}
+<p>There is nothing to show yet!</p>
+{{end}}
 {{end}}
