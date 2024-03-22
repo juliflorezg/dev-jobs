@@ -11,7 +11,8 @@ import (
 	"time"
 
 	"github.com/juliflorezg/dev-jobs/internal/models"
-
+	
+	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -19,6 +20,7 @@ type application struct {
 	logger        *slog.Logger
 	templateCache map[string]*template.Template
 	jobPosts      models.JobPostModelInterface
+	formDecoder   *form.Decoder
 }
 
 func main() {
@@ -44,10 +46,13 @@ func main() {
 	}
 	defer db.Close()
 
+	formDecoder := form.NewDecoder()
+
 	app := &application{
 		logger:        logger,
 		templateCache: templateCache,
 		jobPosts:      &models.JobPostModel{DB: db},
+		formDecoder: formDecoder,
 	}
 
 	tlsConfig := &tls.Config{
