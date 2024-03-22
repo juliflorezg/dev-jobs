@@ -1,6 +1,33 @@
 {{define "title"}}Home{{end}} 
 {{define "main"}} 
 {{if .JobPosts}}
+<form action="/filterBy" method="GET" class="form-filter-home">
+  <div class="form-filter-container">
+    <label for="position">Position</label>
+    <img src="/static/img/icon-search.svg" alt="icon-for-search-by-position">
+    <input type="text" name="position" id="filterByPosition" placeholder="Filter by position...">
+  </div>
+
+  <div class="form-filter-container form-filter-container-middle">    
+    <label for="location">Location</label>
+    <img src="/static/img/icon-location.svg" alt="icon-for-search-by-location">
+    <input type="text" name="location" id="filterByLocation" placeholder="Filter by location">
+  </div>
+
+  <div class="form-filter-container">
+    <input type="checkbox" name="contract" id="filterByContract" >
+    <label for="contract">Full Time Only</label>
+    <button type="submit" class="form-submit">Search</button>
+  </div>
+  <div class="form-filter-container form-filter-container-search-mobile">
+    <img src="/static/img/icon-filter.svg" alt="icon-for-search-by-contract">
+    <button type="submit" class="form-submit form-submit-mobile">
+      <img src="/static/img/icon-search-white.svg" alt="icon-for-search-by-contract">
+
+    </button>
+
+  </div>
+</form>
 <section class="jobposts-container">
   {{range .JobPosts}}
   <a href="/jobpost/view/{{.ID}}">
