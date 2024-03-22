@@ -23,7 +23,7 @@ func humanDate(t time.Time) string {
 
 	// that date must be used (https://pkg.go.dev/time@go1.21.6#Time.Format)
 	// Convert the time to UTC before formatting it.
-	return t.UTC().Format("02 Jan 2006 at 15:04 MST")
+	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
 var functions = template.FuncMap{
