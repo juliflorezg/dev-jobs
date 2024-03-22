@@ -1,21 +1,25 @@
 {{define "title"}}Home{{end}} 
 {{define "main"}} 
 {{if .JobPosts}}
-<div class="container">
+<section class="jobposts-container">
   {{range .JobPosts}}
-  <div>
-    <p>#{{.ID}}</p>
-    <p>{{.Company.Name}}</p>
-    <div>{{.Company.LogoSVG}}</div>
-    <p>{{.PostedAt}}</p>
-    <p>{{.Contract}}</p>
-    <p>{{.Position}}</p>
-    <p>{{.Location}}</p>
-  </div>
-  <br />
-  <hr />
+  <a href="/jobpost/view/{{.ID}}">
+    <article class="jobpost-home">
+      <!-- <p>#{{.ID}}</p> -->
+      <div class="jobpost-home__company-logo-container" style="background-color: {{ .Company.LogoBgColor}};">{{.Company.LogoSVG}}</div>
+      <div class="jobpost-home__jobpost-info">
+
+        <p>{{humanDate .PostedAt}}</p>
+        <span class="jobpost-info__separator"></span>
+        <p>{{.Contract}}</p>
+      </div>
+      <h2 class="jobpost-home__position">{{.Position}}</h2>
+      <p class="jobpost-home__company">{{.Company.Name}}</p>
+      <p class="jobpost-home__location">{{.Location}}</p>
+    </article>
+  </a>
   {{end}}
-</div>
+</sect>
 {{else}}
 <p>There is nothing to show yet!</p>
 {{end}}
