@@ -14,6 +14,7 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/static/*filepath", fileServer)
 
 	router.HandlerFunc(http.MethodGet, "/", app.home)
+	router.HandlerFunc(http.MethodGet, "/filterBy", app.homeFilterJobPosts)
 
 	return app.recoverPanic(app.logRequest(secureHeaders(router)))
 }
