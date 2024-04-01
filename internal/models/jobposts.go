@@ -2,11 +2,14 @@ package models
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"time"
 )
 
 type JobPostModelInterface interface {
 	Latest() ([]JobPost, error)
+	FilterPosts(position, location, contract string) ([]JobPost, error)
 }
 
 type JobPost struct {
@@ -84,6 +87,58 @@ func (jp *JobPostModel) Latest() ([]JobPost, error) {
 		// if err != nil {
 		// 	return nil, err
 		// }
+
+		jobposts = append(jobposts, jp)
+	}
+
+	return jobposts, nil
+}
+
+func (jp *JobPostModel) FilterPosts(position, location, contract string) ([]JobPost, error) {
+	stmt := `SELECT jp.job_post_id, jp.position, jp.description, jp.contract, jp.location, jp.posted_at, cp.name, cp.logo_svg, cp.logo_bg_color
+  FROM jobposts AS jp 
+  INNER JOIN companies AS cp ON jp.company_id = cp.company_id WHERE 1=1`
+
+	params := make([]any, 0, 3)
+
+	if position != "" {
+		stmt += ` AND jp.position LIKE ?`
+		params = append(params, "%"+position+"%")
+	}
+	if location != "" && location != "Filter by location" {
+		stmt += ` AND jp.location LIKE ?`
+		params = append(params, "%"+location+"%")
+	}
+	if contract != "" {
+		stmt += ` AND jp.contract LIKE ?`
+		params = append(params, "%"+contract+"%")
+	}
+	fmt.Println("params ==>", params)
+
+	stmt += ` ORDER BY jp.posted_at DESC LIMIT 10`
+	fmt.Println("sql statement ==>", stmt)
+
+	rows, err := jp.DB.Query(stmt, params...)
+
+	if err != nil {
+		// return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return []JobPost{}, ErrNoRecord
+		} else {
+			return []JobPost{}, err
+		}
+	}
+	defer rows.Close()
+
+	var jobposts []JobPost
+
+	for rows.Next() {
+		var jp JobPost
+
+		err := rows.Scan(&jp.ID, &jp.Position, &jp.Description, &jp.Contract, &jp.Location, &jp.PostedAt, &jp.Company.Name, &jp.Company.LogoSVG, &jp.Company.LogoBgColor)
+		if err != nil {
+			return nil, err
+		}
 
 		jobposts = append(jobposts, jp)
 	}
