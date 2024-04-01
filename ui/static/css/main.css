@@ -33,6 +33,11 @@ header {
   padding-inline: 5%;
 }
 
+main {
+  position: relative;
+  padding-top: 75px;
+}
+
 .wrapper {
   margin: 0 auto;
   height: 40%;
@@ -41,6 +46,7 @@ header {
   align-items: center;
   width: 100%;
   max-width: 1440px;
+  transform: translateY(-40%);
 }
 
 .logo-container,
@@ -154,6 +160,159 @@ header {
   font-weight: 700;
 }
 
+/* home search form */
+
+.hidden {
+  display: none !important;
+}
+
+label[for='position'],
+.form-icon-position {
+  display: none;
+}
+
+.form-filter-home {
+  margin-inline: 5%;
+  /* padding-inline: 1.5rem; */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  /* transform: translateY(-50%); */
+  position: absolute;
+  top: -50px;
+  left: 0;
+  right: 0;
+  max-height: 100px;
+}
+.form-filter-home > .form-filter-container:nth-child(1) {
+  flex-grow: 1;
+}
+
+.form-filter-container {
+  display: flex;
+  gap: 1rem;
+}
+
+#filterByPosition {
+  width: 100%;
+  border: 0 none transparent;
+}
+#filterByPosition:focus {
+  border: 1px solid #00053f;
+}
+
+.form-icon-container {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 0 none transparent;
+}
+
+.form-submit {
+  background-color: #5964e0;
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.form-submit:hover {
+  cursor: pointer;
+}
+
+.form-submit-mobile {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0 none transparent;
+  border-radius: 0.5rem;
+}
+
+.form-input-container-mobile {
+  background-color: #131530a8;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align-items: center; */
+  padding-inline: 10%;
+}
+
+label[for='location'] {
+  display: none;
+}
+
+.close-icon-container {
+  position: absolute;
+  top: 0;
+  right: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.5rem;
+}
+
+.form-input-container-mobile > .form-filter-container:nth-child(1),
+.form-input-container-mobile > .form-filter-container:nth-child(2) {
+  width: 100%;
+}
+.form-input-container-mobile > .form-filter-container:nth-child(1) {
+  position: relative;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  padding: 1rem;
+  padding-top: 2.75rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid #9daec2;
+  background-color: #fff;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.form-filter-location {
+  flex-grow: 1;
+  /* height: 30px; */
+  padding: 0.5rem 0;
+  padding-inline: 0.5rem;
+}
+
+.form-input-container-mobile > .form-filter-container:nth-child(2) {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  padding: 1rem;
+  padding-top: 1.75rem;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.form-full-time-container {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.form-full-time-container > input[type='checkbox'] {
+  width: 1.5rem;
+  aspect-ratio: 1;
+}
+
+.form-submit-desktop {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-radius: 0.25rem;
+  border: 0 none transparent;
+}
+
 @media screen and (min-width: 768px) {
   header {
     background-image: url('/static/img/bg-pattern-header-desktop.svg');
@@ -166,13 +325,89 @@ header {
   .jobposts-container {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* home filter form */
+
+  .form-icon-position {
+    display: block;
+  }
+
+  .form-filter-home > .form-filter-container:first-child {
+    width: 30%;
+    align-items: center;
+  }
+
+  #filterByPosition {
+    align-self: stretch;
+    padding-inline: 1rem;
+  }
+
+  .form-filter-home > .form-input-container-mobile {
+    width: 70%;
+  }
+
+  .form-input-container-mobile > .form-filter-container:first-child {
+    width: 60%;
+  }
+  .form-input-container-mobile > .form-filter-container:last-child {
+    width: 40%;
+  }
+
+  .form-filter-container-search-mobile {
+    display: none;
+    width: 30px;
+    height: 30px;
+  }
+  .form-input-container-mobile {
+    position: relative;
+    width: auto;
+    height: auto;
+    flex-direction: row;
+    padding-inline: 0;
+    background-color: white;
+  }
+
+  .close-icon-container {
+    display: none;
+  }
+  .form-input-container-mobile > .form-filter-container:nth-child(1) {
+    padding: 0;
+    padding-inline: 1rem;
+    border: 0 none transparent;
+  }
+  .form-input-container-mobile > .form-filter-container:nth-child(2) {
+    padding: 0;
+    padding-inline-start: 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .form-filter-location {
+    max-width: 90%;
+  }
+  .form-full-time-container {
+    margin-bottom: 0;
+  }
+  .form-submit-desktop {
+    width: auto;
+    padding-inline: 0.75rem;
+  }
+  label[for='contract'] {
+    max-width: 9ch;
+  }
 }
+
 @media screen and (min-width: 1080px) {
   .jobposts-container {
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
+  label[for='contract'] {
+    max-width: unset;
+  }
 }
+
 @media screen and (min-width: 1440px) {
   .jobposts-container {
     padding-inline: 0;
