@@ -17,7 +17,7 @@
       <!-- <input type="text" name="location" id="filterByLocation" placeholder="Filter by location"> -->
       <select class="form-filter-location" id="filterByLocation" name="location">
 
-        <option value="Filter by location">Filter by location</option>
+        <option value="">Filter by location</option>
         <!-- <option value="Afghanistan">Afghanistan</option> -->
         <!-- <option value="Åland Islands">Åland Islands</option> -->
         <!-- <option value="Albania">Albania</option> -->
@@ -284,6 +284,19 @@
     </button>
   </div>
 </form>
+
+{{if .JobPostsFilterData}} 
+  <div>
+    {{range .JobPostsFilterData.SearchResultMessage}}
+      {{if or (eq . "position") (eq . "location") (eq . "contract")}}
+        <strong>{{.}}</strong>
+      {{else}}
+        <span>{{.}}</span>
+      {{end}}
+    {{end}}
+  </div>
+{{end}}
+
 {{if .JobPosts}}
 <section class="jobposts-container">
   {{range .JobPosts}}
@@ -305,6 +318,16 @@
   {{end}}
 </sect>
 {{else}}
-<p>There is nothing to show yet!</p>
+
+{{if .JobPostsFilterData.IsSearchResultPage}} 
+  <div>
+    <p>{{.JobPostsFilterData.NoPostsData}}</p>
+  </div>
+{{else}} 
+<div>
+  <p>There is nothing to show yet!</p>
+</div>
+{{end}}
+
 {{end}}
 {{end}}
