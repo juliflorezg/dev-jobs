@@ -288,7 +288,7 @@
 {{if .JobPostsFilterData}} 
   <div>
     {{range .JobPostsFilterData.SearchResultMessage}}
-      {{if or (eq . "position") (eq . "location") (eq . "contract")}}
+      {{if or (eq . "position:") (eq . "location:") (eq . "contract:")}}
         <strong>{{.}}</strong>
       {{else}}
         <span>{{.}}</span>
