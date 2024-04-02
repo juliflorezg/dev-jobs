@@ -1,6 +1,6 @@
 {{define "title"}}Home{{end}} 
 {{define "main"}} 
-<form action="/filterBy" method="GET" class="form-filter-home">
+<form action="/filterBy" method="GET" id="homeFilterForm" class="form-filter-home">
   <div class="form-filter-container">
     <label for="position">Position</label>
     <img src="/static/img/icon-search.svg" alt="icon-for-search-by-position" class="form-icon-position">
@@ -270,6 +270,11 @@
         <input type="checkbox" name="contract" id="filterByContract" value="full time">
         <label for="contract">Full Time Only</label>
       </div>
+      {{with .Form.FieldErrors.mobileFormMenuError}}
+        <div class="">
+          <p>{{ . }}</p>
+        </div>
+      {{end}}
       <button type="submit" class="form-submit form-submit-desktop">Search</button>
     </div>
   </div>
@@ -283,7 +288,16 @@
       <img src="/static/img/icon-search-white.svg" alt="icon-for-search-by-contract">
     </button>
   </div>
+
+  <input type="hidden" name="windowWidth" value="" id="homeFilterFormWindowInput"> 
+  <input type="hidden" name="mobileMenuClasses" value="" id="homeFilterFormMobileMenuInput"> 
+
 </form>
+{{with .Form.FieldErrors}}
+  <div>
+    <p>{{ .formError }}</p>
+  </div>
+{{end}}
 
 {{if .JobPostsFilterData}} 
   <div>
