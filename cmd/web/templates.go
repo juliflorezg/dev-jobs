@@ -14,11 +14,14 @@ type JobPostsFilterData struct{
 	NoPostsData string
 	SearchResultMessage []string
 	IsSearchResultPage bool
+	MobileMenuClasses   string 
+	WindowWidth         string
 }
 type templateData struct {
 	CurrentYear int
 	JobPosts    []models.JobPost
-	JobPostsFilterData
+	JobPostsFilterData 
+	Form any
 }
 
 func humanDate(t time.Time) string {
