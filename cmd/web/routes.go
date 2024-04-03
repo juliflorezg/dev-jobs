@@ -15,6 +15,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/", app.home)
 	router.HandlerFunc(http.MethodGet, "/filterBy", app.homeFilterJobPosts)
+	router.HandlerFunc(http.MethodGet, "/jobpost/view/:id", app.jobPostView)
 
 	return app.recoverPanic(app.logRequest(secureHeaders(router)))
 }
