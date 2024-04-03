@@ -13,8 +13,6 @@ type JobPostFilterForm struct {
 	Position            string `form:"position"`
 	Location            string `form:"location"`
 	Contract            string `form:"contract"`
-	MobileMenuClasses   string `form:"mobileMenuClasses"`
-	WindowWidth         string `form:"windowWidth"`
 	validator.Validator `form:"-"`
 }
 
@@ -44,11 +42,7 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 	}
 	fmt.Printf("%+v\n", form)
 
-	err = form.ValidateFormData((validator.IsNoData(form.Position, form.Location, form.Contract)), form.MobileMenuClasses, form.WindowWidth)
-	if err != nil {
-		app.logger.Error(err.Error())
-		return
-	}
+	form.ValidateFormData((validator.IsNoData(form.Position, form.Location, form.Contract)))
 
 	fmt.Println()
 	fmt.Println("is form valid?? ::", form.Valid())
@@ -56,7 +50,17 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 	fmt.Println()
 
 	if !form.Valid() {
+
+		jobposts, err := app.jobPosts.Latest()
+
+		if err != nil {
+			app.serverError(w, r, err)
+			return
+		}
+
 		data := app.newTemplateData()
+		data.JobPosts = jobposts
+
 		data.Form = form
 
 		fmt.Println()
@@ -69,6 +73,7 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 	}
 
 	templateData := app.newTemplateData()
+	templateData.Form = form
 	jobPosts, err := app.jobPosts.FilterPosts(form.Position, form.Location, form.Contract)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
