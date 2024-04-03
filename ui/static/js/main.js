@@ -3,11 +3,7 @@ openFormMenuIcon = document.querySelector(
   `.form-filter-container-search-mobile > button[type='button']`
 )
 closeFormIcon = document.querySelector('.close-icon-container')
-homeFilterForm = document.querySelector('#homeFilterForm')
-homeFilterFormWindowInput = document.querySelector('#homeFilterFormWindowInput')
-homeFilterFormMobileMenuInput = document.querySelector(
-  '#homeFilterFormMobileMenuInput'
-)
+
 
 formMobileMenu.addEventListener('click', function (e) {
   if (e.target === formMobileMenu) {
@@ -33,11 +29,3 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 })
 
-// form submission
-homeFilterForm.addEventListener('submit', function (e) {
-  let windowWidth = window.innerWidth
-  const formMenuClasses = formMobileMenu.classList  
-
-  homeFilterFormWindowInput.setAttribute('value', windowWidth)
-  homeFilterFormMobileMenuInput.setAttribute('value', formMenuClasses.value)
-})
