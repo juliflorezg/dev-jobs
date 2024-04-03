@@ -10,18 +10,17 @@ import (
 	"github.com/juliflorezg/dev-jobs/ui"
 )
 
-type JobPostsFilterData struct{
-	NoPostsData string
+type JobPostsFilterData struct {
+	NoPostsData         string
 	SearchResultMessage []string
-	IsSearchResultPage bool
-	MobileMenuClasses   string 
-	WindowWidth         string
+	IsSearchResultPage  bool
 }
 type templateData struct {
 	CurrentYear int
 	JobPosts    []models.JobPost
-	JobPostsFilterData 
-	Form any
+	JobPostsFilterData
+	Form    any
+	JobPost models.JobPost
 }
 
 func humanDate(t time.Time) string {
