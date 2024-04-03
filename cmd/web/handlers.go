@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/juliflorezg/dev-jobs/internal/models"
 	"github.com/juliflorezg/dev-jobs/internal/validator"
 )
@@ -91,5 +93,29 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 	msg := getSearchResultMessage(form.Position, form.Location, form.Contract)
 	templateData.JobPostsFilterData.SearchResultMessage = msg
 	app.render(w, r, 200, "home.tmpl.html", templateData)
+
+}
+
+func (app *application) jobPostView(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	jobPost, err := app.jobPosts.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	data := app.newTemplateData()
+	data.JobPost = jobPost
+	app.render(w, r, 200, "viewJobPost.tmpl.html", data)
 
 }
