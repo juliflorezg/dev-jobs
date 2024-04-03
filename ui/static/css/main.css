@@ -331,6 +331,105 @@ label[for='location'] {
   padding-inline: 5%;
 }
 
+/* jobpost view page */
+
+.jobpost-view-header {
+  position: relative;
+  margin-inline: 5%;
+  margin-bottom: 1.5rem;
+  padding-top: 3rem;
+  padding-bottom: 1.75rem;
+  background-color: #fff;
+  border-radius: 0.75rem;
+}
+
+.jobpost-view-header__company-logo-container {
+  position: absolute;
+  top: -1.75rem;
+  left: calc(50% - 1.75rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+}
+
+.jobpost-view-header__info-container-text {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.jobpost-view-header__info-container-text p {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+.jobpost-view-header__info-container-text span {
+  display: block;
+  width: 100%;
+}
+
+.jobpost-view-header__info-container-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.jobpost-view-header__info-container-button a {
+  /* display: inline; */
+  margin: 0 auto;
+  padding: 0.75rem;
+  background-color: #eeeffc;
+  color: #5964e0;
+  font-weight: 700;
+  border-radius: 0.5rem;
+}
+
+.jobpost-view-content {
+  margin-inline: 5%;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 2rem;
+}
+
+.jobpost-view-content__header {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+.jobpost-view-content__header-text {
+  color: #6e8098;
+}
+.jobpost-view-content__header-text-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.jobpost-view-content__header-title {
+  font-size: 2rem;
+  color: #19202d;
+}
+.jobpost-view-content__header-location {
+  color: #5964e0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.jobpost-view-content__header-apply-link {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.jobpost-view-content__header-apply-link > a {
+  padding-block: 0.75rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-align: center;
+  background-color: #5964e0;
+  color: #fff;
+  border-radius: .5rem;
+}
+
 @media screen and (min-width: 768px) {
   header {
     background-image: url('/static/img/bg-pattern-header-desktop.svg');
@@ -413,6 +512,43 @@ label[for='location'] {
   }
   label[for='contract'] {
     max-width: 9ch;
+  }
+
+  /* jobpost view page */
+
+  .jobpost-view-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 0;
+    height: 15%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .jobpost-view-header__company-logo-container {
+    position: initial;
+    width: 15%;
+    height: 15%;
+    aspect-ratio: 1/1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .jobpost-view-header__info-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-inline: 2rem;
+    width: 85%;
+  }
+  .jobpost-view-header__info-container-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0;
+    text-align: left;
   }
 }
 
