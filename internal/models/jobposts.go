@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -10,6 +11,7 @@ import (
 type JobPostModelInterface interface {
 	Latest() ([]JobPost, error)
 	FilterPosts(position, location, contract string) ([]JobPost, error)
+	Get(id int) (JobPost, error)
 }
 
 type JobPost struct {
@@ -144,4 +146,41 @@ func (jp *JobPostModel) FilterPosts(position, location, contract string) ([]JobP
 	}
 
 	return jobposts, nil
+}
+
+func (jp *JobPostModel) Get(id int) (JobPost, error) {
+
+	stmt := `SELECT jp.job_post_id, jp.position, jp.description, jp.contract, jp.location, jp.posted_at, cp.name, cp.logo_svg, cp.logo_bg_color, cp.website, rq.requirements_description, rq.requirements_list, rl.role_description, rl.role_list
+	FROM jobposts AS jp
+	INNER JOIN companies AS cp ON jp.company_id = cp.company_id
+	INNER JOIN requirements AS rq ON jp.requirements_id = rq.req_id
+	INNER JOIN roles AS rl ON jp.role_id = rl.role_id
+	WHERE jp.job_post_id = ?`
+
+	row := jp.DB.QueryRow(stmt, id)
+	var jobPost JobPost
+
+	var rqList any
+	var roleList any
+
+	err := row.Scan(&jobPost.ID, &jobPost.Position, &jobPost.Description, &jobPost.Contract, &jobPost.Location, &jobPost.PostedAt, &jobPost.Company.Name, &jobPost.Company.LogoSVG, &jobPost.Company.LogoBgColor, &jobPost.Company.Website, &jobPost.Requirements.RequirementsDescription, &rqList, &jobPost.Role.RoleDescription, &roleList)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return JobPost{}, ErrNoRecord
+		} else {
+			return JobPost{}, err
+		}
+	}
+
+	err = json.Unmarshal(rqList.([]byte), &jobPost.Requirements.RequirementsList)
+	if err != nil {
+		return JobPost{}, err
+	}
+	err = json.Unmarshal(roleList.([]byte), &jobPost.Role.RoleList)
+	if err != nil {
+		return JobPost{}, err
+	}
+
+	return jobPost, nil
 }
