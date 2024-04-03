@@ -1,0 +1,38 @@
+{{define "title"}} {{printf "%s at %s" .JobPost.Position
+.JobPost.Company.Name}}{{end}} {{define "main"}} {{with .JobPost}}
+<section class="jobpost-view-header">
+  <div
+    class="jobpost-view-header__company-logo-container"
+    style="background-color: {{ .Company.LogoBgColor}};"
+  >
+    {{.Company.LogoSVG}}
+  </div>
+  <div class="jobpost-view-header__info-container">
+    <div class="jobpost-view-header__info-container-text">
+      <p>{{.Company.Name}}</p>
+      <span>{{.Company.Website}}</span>
+    </div>
+    <div class="jobpost-view-header__info-container-button">
+      <a href="{{.Company.Website}}">Company Site</a>
+    </div>
+  </div>
+</section>
+
+<section class="jobpost-view-content">
+  <div class="jobpost-view-content__header">
+    <div class="jobpost-view-content__header-text">
+      <div class="jobpost-view-content__header-text-info">
+      <span>{{humanDate .PostedAt}}</span> <span class="jobpost-info__separator"></span
+      ><span class="">{{.Contract}}</span>
+    </div>
+      <h1 class="jobpost-view-content__header-title">{{.Position}}</h1>
+      <span class="jobpost-view-content__header-location">{{.Location}}</span>
+    </div>
+    <div class="jobpost-view-content__header-apply-link">
+      <a href=""> Apply Now </a>
+    </div>
+  </div>
+  <p class="">{{.Description}}</p>
+</section>
+
+{{end}} {{end}}
