@@ -1,5 +1,11 @@
 {{define "title"}}Home{{end}} 
 {{define "main"}} 
+
+{{with .Form.FieldErrors.formError}}
+  <div class="form-error">
+  </div>
+{{end}}
+
 <form action="/filterBy" method="GET" id="homeFilterForm" class="form-filter-home">
   <div class="form-filter-container">
     <label for="position">Position</label>
@@ -270,11 +276,7 @@
         <input type="checkbox" name="contract" id="filterByContract" value="full time">
         <label for="contract">Full Time Only</label>
       </div>
-      {{with .Form.FieldErrors.mobileFormMenuError}}
-        <div class="">
-          <p>{{ . }}</p>
-        </div>
-      {{end}}
+      
       <button type="submit" class="form-submit form-submit-desktop">Search</button>
     </div>
   </div>
@@ -289,23 +291,26 @@
     </button>
   </div>
 
-  <input type="hidden" name="windowWidth" value="" id="homeFilterFormWindowInput"> 
-  <input type="hidden" name="mobileMenuClasses" value="" id="homeFilterFormMobileMenuInput"> 
+  
 
 </form>
-{{with .Form.FieldErrors}}
-  <div>
-    <p>{{ .formError }}</p>
+{{with .Form.FieldErrors.formError}}
+  <div class="form-error">
+    <p>{{ . }}</p>
   </div>
 {{end}}
 
 {{if .JobPostsFilterData}} 
-  <div>
+  <div class="home-search-result-message">
     {{range .JobPostsFilterData.SearchResultMessage}}
       {{if or (eq . "position:") (eq . "location:") (eq . "contract:")}}
         <strong>{{.}}</strong>
       {{else}}
+        {{if (eq . "Search results for")}} 
+          <p>{{.}}</p>
+        {{else}}
         <span>{{.}}</span>
+        {{end}}
       {{end}}
     {{end}}
   </div>
