@@ -112,7 +112,7 @@ func (app *application) decodeForm(w http.ResponseWriter, r *http.Request, dst a
 
 func getSearchResultMessage(position, location, contract string) []string {
 
-	msg := []string{"search results for"}
+	msg := []string{"Search results for"}
 	if position == "" {
 		msg = append(msg, "position:", "all open positions")
 	} else {
