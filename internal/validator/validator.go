@@ -1,10 +1,8 @@
 package validator
 
 import (
-	"errors"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 	"unicode/utf8"
 	// "github.com/juliflorezg/dev-jobs/"
@@ -80,21 +78,8 @@ func IsNoData(position, location, contract string) bool {
 	return false
 }
 
-func (v *Validator) ValidateFormData(isNoData bool, mobileMenuClasses, windowWidth string) error {
-	windowWidthNum, err := strconv.Atoi(windowWidth)
-	if err != nil {
-		return errors.New("in validator, couldn't convert windowWidth to int")
-	}
+func (v *Validator) ValidateFormData(isNoData bool) {
 	if isNoData {
-		if windowWidthNum > 768 {
-			v.AddFieldError("formError", "please select at least 1 criteria for your job-post search")
-		} else {
-			if strings.Contains(mobileMenuClasses, "hidden") {
-				v.AddFieldError("formError", "Please select at least 1 criteria for your job-post search")
-			} else {
-				v.AddFieldError("mobileFormMenuError", "Please select at least 1 criteria for your job post search")
-			}
-		}
+		v.AddFieldError("formError", "Please select at least 1 criteria for your job-post search")
 	}
-	return nil
 }
