@@ -313,6 +313,24 @@ label[for='location'] {
   border: 0 none transparent;
 }
 
+.form-error {
+  margin-inline: 5%;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  color: red;
+}
+
+.form-error + .form-filter-home {
+  outline: 2px solid red;
+}
+
+.home-search-result-message {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-inline: 5%;
+}
+
 @media screen and (min-width: 768px) {
   header {
     background-image: url('/static/img/bg-pattern-header-desktop.svg');
@@ -409,7 +427,8 @@ label[for='location'] {
 }
 
 @media screen and (min-width: 1440px) {
-  .jobposts-container {
+  .jobposts-container,
+  .home-search-result-message {
     padding-inline: 0;
   }
 }
