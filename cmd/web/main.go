@@ -11,16 +11,19 @@ import (
 	"time"
 
 	"github.com/juliflorezg/dev-jobs/internal/models"
-	
+
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	logger        *slog.Logger
-	templateCache map[string]*template.Template
-	jobPosts      models.JobPostModelInterface
-	formDecoder   *form.Decoder
+	logger         *slog.Logger
+	templateCache  map[string]*template.Template
+	jobPosts       models.JobPostModelInterface
+	formDecoder    *form.Decoder
+	sessionManager *scs.SessionManager
 }
 
 func main() {
@@ -48,11 +51,16 @@ func main() {
 
 	formDecoder := form.NewDecoder()
 
+	sessionManager := scs.New()
+	sessionManager.Store = mysqlstore.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+
 	app := &application{
-		logger:        logger,
-		templateCache: templateCache,
-		jobPosts:      &models.JobPostModel{DB: db},
-		formDecoder: formDecoder,
+		logger:         logger,
+		templateCache:  templateCache,
+		jobPosts:       &models.JobPostModel{DB: db},
+		formDecoder:    formDecoder,
+		sessionManager: sessionManager,
 	}
 
 	tlsConfig := &tls.Config{
