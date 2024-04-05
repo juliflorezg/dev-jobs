@@ -38,6 +38,22 @@ main {
   padding-top: 75px;
 }
 
+.base-footer-go {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-block: 0.25rem;
+}
+.base-footer-go div {
+  text-align: center;
+}
+.base-footer-go a {
+  color: #5964e0;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
 .wrapper {
   margin: 0 auto;
   height: 40%;
@@ -386,10 +402,13 @@ label[for='location'] {
 }
 
 .jobpost-view-content {
+  max-width: 800px;
   margin-inline: 5%;
+  margin-bottom: 3rem;
+  padding: 2rem;
   background-color: #fff;
   border-radius: 0.75rem;
-  padding: 2rem;
+  color: #6e8098;
 }
 
 .jobpost-view-content__header {
@@ -398,28 +417,34 @@ label[for='location'] {
   gap: 3rem;
   margin-bottom: 2rem;
 }
+
 .jobpost-view-content__header-text {
   color: #6e8098;
 }
+
 .jobpost-view-content__header-text-info {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .jobpost-view-content__header-title {
   font-size: 2rem;
   color: #19202d;
 }
+
 .jobpost-view-content__header-location {
   color: #5964e0;
   font-size: 0.9rem;
   font-weight: 700;
 }
+
 .jobpost-view-content__header-apply-link {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
+
 .jobpost-view-content__header-apply-link > a {
   padding-block: 0.75rem;
   font-weight: 700;
@@ -427,7 +452,66 @@ label[for='location'] {
   text-align: center;
   background-color: #5964e0;
   color: #fff;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
+}
+
+.jobpost-view-content__description {
+  margin-bottom: 2rem;
+}
+
+.jobpost-view-content__req-title,
+.jobpost-view-content__role-title {
+  font-size: 1.5rem;
+  color: #00053f;
+  margin-bottom: 1rem;
+}
+
+.jobpost-view-content__req-list,
+.jobpost-view-content__role-list {
+  padding-top: 1rem;
+  padding-left: 1rem;
+  margin-bottom: 2rem;
+}
+
+.jobpost-view-content__req-list > li,
+.jobpost-view-content__role-list > li {
+  transform: translateX(3%);
+  margin-bottom: 0.75rem;
+  padding-left: 10px;
+}
+
+.jobpost-view-content__req-list > li::marker,
+.jobpost-view-content__role-list > li::marker {
+  padding-right: 0.5rem;
+}
+
+.jobpost-view-content__role-list > li::marker {
+  color: #5964e0;
+  font-weight: 700;
+}
+
+.jobpost-view-footer {
+  width: 100%;
+  background-color: #fff;
+  padding-inline: 5%;
+  padding-block: 2rem;
+}
+
+/* .jobpost-view-footer-container{} */
+
+.jobpost-view-footer-container__text {
+  display: none;
+}
+
+.jobpost-view-footer__apply-link a {
+  display: block;
+  padding-block: 1rem;
+  background-color: #5964e0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -525,6 +609,7 @@ label[for='location'] {
     height: 15%;
     max-width: 800px;
     margin: 0 auto;
+    margin-bottom: 2rem;
   }
   .jobpost-view-header__company-logo-container {
     position: initial;
@@ -549,6 +634,51 @@ label[for='location'] {
     gap: 1rem;
     margin: 0;
     text-align: left;
+  }
+
+  .jobpost-view-content {
+    margin: 0 auto;
+    margin-bottom: 3rem;
+  }
+  .jobpost-view-content__header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .jobpost-view-content__header-apply-link {
+    justify-content: center;
+  }
+  .jobpost-view-content__header-apply-link a {
+    padding-block: 1rem;
+    padding-inline: 1.5rem;
+  }
+
+  .jobpost-view-footer {
+    padding: 0;
+    padding-inline: 5%;
+  }
+  .jobpost-view-footer-container {
+    padding-block: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .jobpost-view-footer-container__text {
+    display: block;
+  }
+  .jobpost-view-footer-container__text span {
+    display: block;
+    color: #6e8098;
+  }
+  .jobpost-view-footer-container__text-position {
+    color: #00053f !important;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .jobpost-view-footer__apply-link a {
+    padding-inline: 1.75rem;
   }
 }
 
