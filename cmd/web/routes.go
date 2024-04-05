@@ -5,6 +5,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/juliflorezg/dev-jobs/ui"
+	"github.com/justinas/alice"
 )
 
 func (app *application) routes() http.Handler {
@@ -17,5 +18,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/filterBy", app.homeFilterJobPosts)
 	router.HandlerFunc(http.MethodGet, "/jobpost/view/:id", app.jobPostView)
 
-	return app.recoverPanic(app.logRequest(secureHeaders(router)))
+	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+
+	return standard.Then(router)
 }
