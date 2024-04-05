@@ -22,17 +22,44 @@
   <div class="jobpost-view-content__header">
     <div class="jobpost-view-content__header-text">
       <div class="jobpost-view-content__header-text-info">
-      <span>{{humanDate .PostedAt}}</span> <span class="jobpost-info__separator"></span
-      ><span class="">{{.Contract}}</span>
-    </div>
+        <span>{{humanDate .PostedAt}}</span>
+        <span class="jobpost-info__separator"></span
+        ><span class="">{{.Contract}}</span>
+      </div>
       <h1 class="jobpost-view-content__header-title">{{.Position}}</h1>
       <span class="jobpost-view-content__header-location">{{.Location}}</span>
     </div>
     <div class="jobpost-view-content__header-apply-link">
-      <a href=""> Apply Now </a>
+      <a href="">Apply Now</a>
     </div>
   </div>
-  <p class="">{{.Description}}</p>
+  <p class="jobpost-view-content__description">{{.Description}}</p>
+  <h2 class="jobpost-view-content__req-title">Requirements</h2>
+  <p>{{.Requirements.RequirementsDescription}}</p>
+  <ul class="jobpost-view-content__req-list">
+    {{range .Requirements.RequirementsList}}
+    <li>{{ . }}</li>
+    {{end}}
+  </ul>
+  <h2 class="jobpost-view-content__role-title">What You Will Do</h2>
+  <p>{{.Role.RoleDescription}}</p>
+  <ol class="jobpost-view-content__role-list">
+    {{range .Role.RoleList}}
+    <li>{{ . }}</li>
+    {{end}}
+  </ol>
+  <!-- <span>{{ len .Requirements.RequirementsList }}</span> -->
+</section>
+<section class="jobpost-view-footer">
+  <div class="jobpost-view-footer-container">
+    <div class="jobpost-view-footer-container__text">
+      <span class="jobpost-view-footer-container__text-position">{{ .Position }}</span>
+      <span>{{ .Company.Name }}</span>
+    </div>
+    <div class="jobpost-view-footer__apply-link">
+      <a href="">Apply Now</a>
+    </div>
+  </div>
 </section>
 
 {{end}} {{end}}
