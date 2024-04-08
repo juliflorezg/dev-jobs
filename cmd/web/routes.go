@@ -20,6 +20,11 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/filterBy", dynamic.ThenFunc(app.homeFilterJobPosts))
 	router.Handler(http.MethodGet, "/jobpost/view/:id", dynamic.ThenFunc(app.jobPostView))
 
+	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignUp))
+	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignUpPost))
+	router.Handler(http.MethodGet, "/company/signup", dynamic.ThenFunc(app.companySignUp))
+	router.Handler(http.MethodPost, "/company/signup", dynamic.ThenFunc(app.companySignUpPost))
+
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
 	return standard.Then(router)

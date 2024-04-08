@@ -119,3 +119,16 @@ func (app *application) jobPostView(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, 200, "viewJobPost.tmpl.html", data)
 
 }
+
+func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("sample response"))
+}
+func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("sample response"))
+}
+func (app *application) companySignUp(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("sample response"))
+}
+func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("sample response"))
+}
