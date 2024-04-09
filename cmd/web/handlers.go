@@ -18,6 +18,13 @@ type JobPostFilterForm struct {
 	validator.Validator `form:"-"`
 }
 
+type userSignUpForm struct {
+	Name                string `form:"name"`
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte("main page, here i'll put the list of job posts"))
 
@@ -121,7 +128,10 @@ func (app *application) jobPostView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("sample response"))
+	// w.Write([]byte("sample response"))
+	data := app.newTemplateData()
+	data.Form = userSignUpForm{}
+	app.render(w, r, http.StatusOK, "userSignUp.tmpl.html", data)
 }
 func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("sample response"))
