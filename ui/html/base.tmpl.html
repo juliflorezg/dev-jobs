@@ -30,14 +30,49 @@
             <h1 id="company-title">devjobs</h1>
             <img src="/static/img/logo-devjobs.svg" alt="company logo" />
           </a>
+          <div class="toggle-theme-container">
+            <img src="/static/img/icon-sun.svg" alt="light mode icon" />
+            <button
+              class="toggle-theme-container__button"
+              data-active-theme="light"
+            ></button>
+            <img src="/static/img/icon-moon.svg" alt="dark mode icon" />
+          </div>
         </div>
-        <div class="toggle-theme-container">
-          <img src="/static/img/icon-sun.svg" alt="light mode icon" />
-          <button
-            class="toggle-theme-container__button"
-            data-active-theme="light"
-          ></button>
-          <img src="/static/img/icon-moon.svg" alt="dark mode icon" />
+
+        <div class="header-access-container">
+          <div class="header-access-container__sign-in" id="headerSignInBtn">
+            <button>
+              Sign in
+              <div class="header-access-container__sign-in-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                  />
+                </svg>
+              </div>
+            </button>
+            <ul class="header-access-container__sign-in-users-list hidden">
+              <li><a href="/company/signin">Employers</a></li>
+              <li><a href="/user/signin">Professionals</a></li>
+            </ul>
+          </div>
+          <div class="header-access-container__sign-up" id="headerSignUpBtn">
+            <button>
+              Sign up
+              <div class="header-access-container__sign-in-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                  <path
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                  />
+                </svg>
+              </div>
+            </button>
+            <ul class="header-access-container__sign-up-users-list hidden">
+              <li><a href="/company/signup">Employers</a></li>
+              <li><a href="/user/signup">Professionals</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </header>
