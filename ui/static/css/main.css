@@ -23,7 +23,7 @@ body {
 }
 
 header {
-  height: 15%;
+  height: 20%;
   background-image: url('/static/img/bg-pattern-header.svg');
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -67,7 +67,13 @@ main {
 
 .logo-container,
 .toggle-theme-container {
-  height: 100%;
+  height: 115%;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 #company-title {
@@ -75,21 +81,21 @@ main {
 }
 
 .logo-container img {
-  height: 50%;
-  transform: translateY(50%);
+  height: 100%;
+  /* transform: translateY(50%); */
 }
 
 .toggle-theme-container img,
 .toggle-theme-container button {
-  height: 40%;
+  height: 60%;
 }
 
 .toggle-theme-container {
   /* width: 230px; */
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .toggle-theme-container__button {
@@ -111,6 +117,92 @@ main {
   top: 20%;
   left: 9%;
   transition: 0.2s linear;
+}
+
+.header-access-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+}
+
+.header-access-container button {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+  /* padding-right: 1.5rem; */
+  background-color: #5964e0;
+  color: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid #fff;
+  font-weight: 700;
+}
+
+.header-access-container__sign-in,
+.header-access-container__sign-up {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-access-container__sign-up button {
+  background-color: #fff;
+  color: #5964e0;
+}
+
+.header-access-container__sign-in-icon-container {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: none;
+}
+
+.header-access-container__sign-in button,
+.header-access-container__sign-up button {
+  transition: all 0.3s ease-in-out;
+}
+.header-access-container__sign-in button:hover,
+.header-access-container__sign-up button:hover {
+  filter: brightness(0.75);
+  cursor: pointer;
+}
+
+.header-access-container__sign-in-users-list,
+.header-access-container__sign-up-users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style-type: none;
+  position: absolute;
+  top: calc(-50% - 7px);
+  right: 105%;
+  padding-block: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #fff;
+}
+
+.header-access-container__sign-in-users-list li,
+.header-access-container__sign-up-users-list li {
+  list-style-type: none;
+}
+
+.header-access-container__sign-in-users-list a,
+.header-access-container__sign-up-users-list a {
+  display: block;
+  width: 100%;
+  padding-block: 0.25rem;
+  padding-inline: 0.75rem;
+  color: #5964e0;
+  transition: background-color 0.2s ease-in-out, color 0.3s ease-in-out;
+}
+
+.header-access-container__sign-in-users-list a:hover,
+.header-access-container__sign-up-users-list a:hover {
+  background-color: #232a74;
+  color: #fff;
 }
 
 /* home */
@@ -519,12 +611,31 @@ label[for='location'] {
     background-image: url('/static/img/bg-pattern-header-desktop.svg');
   }
 
-  .logo-container img {
+  /* .logo-container img {
     height: 70%;
     transform: translateY(30%);
-  }
+  } */
+
   .jobposts-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header-access-container {
+    flex-direction: row;
+    height: auto;
+    align-self: start;
+  }
+
+  .header-access-container__sign-in-users-list,
+  .header-access-container__sign-up-users-list {
+    top: 115%;
+    right: 0;
+    gap: 0;
+    padding-block: 0.2rem;
+  }
+
+  .header-access-container__sign-in-icon-container {
+    display: block;
   }
 
   /* home filter form */
