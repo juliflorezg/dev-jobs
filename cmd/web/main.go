@@ -22,6 +22,7 @@ type application struct {
 	logger         *slog.Logger
 	templateCache  map[string]*template.Template
 	jobPosts       models.JobPostModelInterface
+	users          models.UserModelInterface
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
 }
@@ -59,6 +60,7 @@ func main() {
 		logger:         logger,
 		templateCache:  templateCache,
 		jobPosts:       &models.JobPostModel{DB: db},
+		users:          &models.UserModel{DB: db},
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 	}
