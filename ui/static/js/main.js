@@ -4,6 +4,14 @@ openFormMenuIcon = document.querySelector(
 )
 closeFormIcon = document.querySelector('.close-icon-container')
 
+headerSignInBtn = document.querySelector('#headerSignInBtn')
+signInBtnMenu = document.querySelector(
+  '.header-access-container__sign-in-users-list'
+)
+headerSignUpBtn = document.querySelector('#headerSignUpBtn')
+signUpBtnMenu = document.querySelector(
+  '.header-access-container__sign-up-users-list'
+)
 
 formMobileMenu.addEventListener('click', function (e) {
   if (e.target === formMobileMenu) {
@@ -29,3 +37,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 })
 
+headerSignInBtn.addEventListener('click', function (e) {
+  signInBtnMenu.classList.toggle('hidden')
+  signUpBtnMenu.classList.add('hidden')
+})
+
+headerSignUpBtn.addEventListener('click', function (e) {
+  signUpBtnMenu.classList.toggle('hidden')
+  signInBtnMenu.classList.add('hidden')
+})
