@@ -616,6 +616,7 @@ label[for='location'] {
 }
 
 /* user Sign Up Form*/
+
 .user-signup-form {
   padding-inline: 5%;
 }
@@ -649,6 +650,13 @@ label[for='location'] {
 }
 .user-signup-form__container input[type='submit']:hover {
   background-color: #232a74;
+}
+
+.user-signup-form__container .error {
+  color: #c60038;
+}
+.user-signup-form__container .error + input {
+  border: 2px solid #c60038;
 }
 
 @media screen and (min-width: 768px) {
