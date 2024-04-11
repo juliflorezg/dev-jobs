@@ -3,6 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -22,6 +25,14 @@ type userSignUpForm struct {
 	Name                string `form:"name"`
 	Email               string `form:"email"`
 	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+type companySignUpForm struct {
+	Name                string `form:"name"`
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	SVGIcon             string `form:"svgicon"`
+	IconBgColor         string `form:"iconbgcolor"`
 	validator.Validator `form:"-"`
 }
 
@@ -133,6 +144,7 @@ func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
 	data.Form = userSignUpForm{}
 	app.render(w, r, http.StatusOK, "userSignUp.tmpl.html", data)
 }
+
 func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 
 	var form userSignUpForm
@@ -148,7 +160,7 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", "This field must be a valid email address")
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 	form.CheckField(validator.MinChars(form.Password, 8), "password", "This field must be at least 8 characters")
-	form.CheckField(validator.Matches(form.Password, validator.SpecialCharsRegex), "password", "Your password must contain at least: one uppercase letter, one lowercase letter, one number and one special character (!\"@#$%^&*()?<>.-)")
+	form.CheckField(validator.IsValidPassword(form.Password), "password", "Your password must contain at least: one uppercase letter, one lowercase letter, one number and one special character (!\"@#$%^&*()?<>.-)")
 
 	if !form.Valid() {
 		data := app.newTemplateData()
@@ -172,14 +184,44 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Your sign up was successful. Please log in.")
 
-  http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 
 	// w.Write([]byte("create a new user..."))
 
 }
 func (app *application) companySignUp(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("sample response"))
+	// w.Write([]byte("sample response"))
+	data := app.newTemplateData()
+	data.Form = companySignUpForm{}
+	app.render(w, r, http.StatusOK, "companySignUp.tmpl.html", data)
 }
 func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("sample response"))
+	// w.Write([]byte("sample response"))
+	var form companySignUpForm
+
+	err := app.decodeForm(w, r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	s, err := processFile(r)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	r.ParseMultipartForm(math.MaxInt16)
+
+	log.Printf("%#v", r.Header.Get("Content-Type"))
+
+	name := r.FormValue("name")
+	email := r.PostFormValue("email")
+	passwd := r.PostFormValue("password")
+	iconBgColor := r.PostFormValue("iconbgcolor")
+	log.Println(name)
+	log.Println(email)
+	log.Println(passwd)
+	log.Println(iconBgColor)
+
+	io.WriteString(w, s+name+email+passwd+iconBgColor)
 }
