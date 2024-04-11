@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -88,6 +89,7 @@ func (app *application) decodeForm(w http.ResponseWriter, r *http.Request, dst a
 	fmt.Println("in decodeForm fn, helpers.go")
 	fmt.Printf("+%v\n", r.Form)
 	fmt.Printf("+%v\n", r.PostForm)
+	fmt.Println("in helpers file, decodeForm fn (end)")
 
 	if method := r.Method; method == "GET" {
 		err = app.formDecoder.Decode(dst, r.Form)
@@ -112,6 +114,27 @@ func (app *application) decodeForm(w http.ResponseWriter, r *http.Request, dst a
 	}
 
 	return nil
+}
+
+func processFile(r *http.Request) (string, error) {
+	var s string
+	f, h, err := r.FormFile("svgicon")
+	if err != nil {
+		return s, err
+	}
+	defer f.Close()
+
+	// for your information
+	fmt.Println("\nfile:", f, "\nheader:", h, "\nerr", err)
+
+	// read
+	bs, err := io.ReadAll(f)
+	if err != nil {
+		return s, err
+	}
+	s = string(bs)
+
+	return s, nil
 }
 
 func getSearchResultMessage(position, location, contract string) []string {
