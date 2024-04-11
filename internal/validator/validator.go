@@ -1,9 +1,11 @@
 package validator
 
 import (
+	"fmt"
 	"regexp"
 	"slices"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 	// "github.com/juliflorezg/dev-jobs/"
 )
@@ -82,4 +84,29 @@ func (v *Validator) ValidateFormData(isNoData bool) {
 	if isNoData {
 		v.AddFieldError("formError", "Please select at least 1 criteria for your job-post search")
 	}
+}
+
+func IsValidPassword(pass string) bool {
+	var hasUpper, hasLower, hasNumber, hasSpecialChar bool
+
+	for _, c := range pass {
+		switch {
+		case unicode.IsUpper(c):
+			hasUpper = true
+		case unicode.IsLower(c):
+			hasLower = true
+		case unicode.IsNumber(c):
+			hasNumber = true
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			hasSpecialChar = true
+		}
+	}
+	fmt.Println(pass)
+	fmt.Printf("upper: %v, lower: %v, number: %v, specialChar: %v", hasUpper, hasLower, hasNumber, hasSpecialChar)
+
+	if !hasUpper || !hasLower || !hasNumber || !hasSpecialChar {
+		return false
+	}
+
+	return true
 }
