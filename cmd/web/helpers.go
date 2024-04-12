@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/form/v4"
@@ -120,6 +121,7 @@ func processFile(r *http.Request) (string, error) {
 	var s string
 	f, h, err := r.FormFile("svgicon")
 	if err != nil {
+		//handles case where user doesn't upload a file, later in handlers svg icon will be set to a default value
 		return s, err
 	}
 	defer f.Close()
@@ -157,4 +159,86 @@ func getSearchResultMessage(position, location, contract string) []string {
 	}
 
 	return msg
+}
+
+type HSL struct {
+	Hue        int
+	Saturation int
+	Lightness  int
+}
+
+func HexToHSL(hex string) HSL {
+	r, _ := strconv.ParseInt(hex[1:3], 16, 0)
+	g, _ := strconv.ParseInt(hex[3:5], 16, 0)
+	b, _ := strconv.ParseInt(hex[5:7], 16, 0)
+
+	var rVal, gVal, bVal float64
+	rVal = float64(r) / 255
+	gVal = float64(g) / 255
+	bVal = float64(b) / 255
+
+	max := max(rVal, gVal, bVal)
+	min := min(rVal, gVal, bVal)
+
+	var h, s, l float64
+	h = 0
+	s = 0
+	l = (max + min) / 2
+
+	if max == min {
+		h = 0
+		s = 0
+	} else {
+		d := max - min
+		if l > 0.5 {
+			s = d / (2 - max - min)
+		} else {
+			s = d / (max + min)
+		}
+
+		switch max {
+		case rVal:
+			h = (gVal - bVal) / d
+			if gVal < bVal {
+				h += 6
+			}
+		case gVal:
+			h = (bVal-rVal)/d + 2
+		case bVal:
+			h = (rVal-gVal)/d + 4
+		}
+		h /= 6
+	}
+
+	return HSL{
+		Hue:        int(h * 360),
+		Saturation: int(s * 100),
+		Lightness:  int(l * 100),
+	}
+}
+
+func max(a, b, c float64) float64 {
+	max := a
+	if b > max {
+		max = b
+	}
+	if c > max {
+		max = c
+	}
+	return max
+}
+
+func min(a, b, c float64) float64 {
+	min := a
+	if b < min {
+		min = b
+	}
+	if c < min {
+		min = c
+	}
+	return min
+}
+
+func GetHSLColorStr(hsl HSL) string {
+	return fmt.Sprintf("hsl(%v, %v%%, %v%%)", hsl.Hue, hsl.Saturation, hsl.Lightness)
 }
