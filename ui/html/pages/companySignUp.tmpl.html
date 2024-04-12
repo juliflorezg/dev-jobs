@@ -1,5 +1,12 @@
 {{define "title"}}Signup - Companies{{end}} {{define "main"}}
-<form action="/company/signup" method="POST" novalidate class="user-signup-form" id="companySignUpForm" enctype="multipart/form-data">
+<form
+  action="/company/signup"
+  method="POST"
+  novalidate
+  class="user-signup-form"
+  id="companySignUpForm"
+  enctype="multipart/form-data"
+>
   <!-- include the CSRF token -->
   <!-- <input type="hidden" name="csrf_token" value="" /> -->
   <div class="user-signup-form__container">
@@ -24,13 +31,48 @@
     <input type="password" name="password" />
   </div>
   <div class="user-signup-form__container">
-    <div class="user-signup-form__container--child">
-      <label>Choose your company logo (in SVG format):</label>      
-      <input name="svgicon"type="file" accept="image/svg+xml">
+    <label>Company website:</label>
+    {{with .Form.FieldErrors.website}}
+    <label class="error">{{.}}</label>
+    {{end}}
+    <input type="text" name="companywebsite" />
+  </div>
+
+  <div class="user-signup-form__flex">
+    <div class="user-signup-form__container">
+      <label>Choose your company logo (in SVG format):</label>
+      <input name="svgicon" type="file" accept="image/svg+xml" />
     </div>
-    <div class="user-signup-form__container--child">
+    <div class="user-signup-form__container">
       <label>Choose the background color for your company logo</label>
-      <input type="color" name="iconbgcolor" value="#2ecbff">
+      <input type="color" name="iconbgcolor" value="#e0e3ff" />
+    </div>
+  </div>
+  <div class="user-signup-form__info-container">
+    <span id="userSignupFormInfoMessage">Why do I need this information? </span>
+    <div class="user-signup-form__info-container--icon-container">
+      <img src="/static/img/info.svg" alt="icon for information" />
+    </div>
+    <div class="user-signup-form__info-container--info-list hidden">
+      <ul>
+        <li>
+          Although this information is not necessary, it will be used in your
+          job-posts and your profile page.
+        </li>
+        <li>
+          If you don't provide this information, we will set a default icon and
+          color for your company.
+        </li>
+        <li>This can be modified later in 'My profile' page.</li>
+      </ul>
+      <div class="info-container__info-list--close-icon-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+          <path
+            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+            fill="#232a74"
+          />
+        </svg>
+      </div>
     </div>
   </div>
   <div class="user-signup-form__container">
@@ -38,3 +80,6 @@
   </div>
 </form>
 {{end}}
+
+
+"http://www.sample.com","https://www.sample.com/","https://www.sample.com#","http://www.sample.com/xyz","http://www.sample.com/#xyz","www.sample.com","www.sample.com/xyz/#/xyz","sample.com","sample.com?name=foo","http://www.sample.com#xyz","http://www.sample.c"
