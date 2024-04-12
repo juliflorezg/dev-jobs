@@ -33,6 +33,7 @@ type companySignUpForm struct {
 	Password            string `form:"password"`
 	SVGIcon             string `form:"svgicon"`
 	IconBgColor         string `form:"iconbgcolor"`
+	Website             string `form:"companywebsite"`
 	validator.Validator `form:"-"`
 }
 
@@ -199,29 +200,73 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 	// w.Write([]byte("sample response"))
 	var form companySignUpForm
 
-	err := app.decodeForm(w, r, &form)
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
+	// err := app.decodeForm(w, r, &form)
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
 
 	s, err := processFile(r)
 	if err != nil {
-		app.serverError(w, r, err)
+		// app.serverError(w, r, err)
+		s = models.DefaultCompanyIcon
 	}
 
 	r.ParseMultipartForm(math.MaxInt16)
 
 	log.Printf("%#v", r.Header.Get("Content-Type"))
 
-	name := r.FormValue("name")
+	name := r.PostFormValue("name")
 	email := r.PostFormValue("email")
 	passwd := r.PostFormValue("password")
 	iconBgColor := r.PostFormValue("iconbgcolor")
+	website := r.PostFormValue("companywebsite")
+	form = companySignUpForm{
+		Name:        name,
+		Email:       email,
+		Password:    passwd,
+		SVGIcon:     s,
+		IconBgColor: GetHSLColorStr(HexToHSL(iconBgColor)),
+		Website:     website,
+	}
+
 	log.Println(name)
 	log.Println(email)
 	log.Println(passwd)
 	log.Println(iconBgColor)
+	log.Println(website)
 
-	io.WriteString(w, s+name+email+passwd+iconBgColor)
+	fmt.Println()
+	fmt.Printf("%+v", form)
+	fmt.Println()
+
+	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", "This field must be a valid email address")
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.Password, 8), "password", "This field must be at least 8 characters")
+	form.CheckField(validator.IsValidPassword(form.Password), "password", "Your password must contain at least: one uppercase letter, one lowercase letter, one number and one special character (!\"@#$%^&*()?<>.-)")
+	form.CheckField(validator.Matches(form.Website, validator.WebsiteRegex), "website", "Your company website doesn't match a URL pattern, try one of this formats: http://example.com, https://example.com, http://example.com/xyz, https://example.com.xyz http://www.example.com, https://www.example.com, http://www.example.com/xyz, https://www.example.com/xyz")
+
+	if !form.Valid() {
+		data := app.newTemplateData()
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+		return
+	}
+
+	// err = app.users.Insert(form.Name, form.Email, form.Password, 2)
+	// if err != nil {
+	// 	if errors.Is(err, models.ErrDuplicateEmail) {
+	// 		form.AddFieldError("email", "This email address is already in use")
+	// 		data := app.newTemplateData()
+	// 		data.Form = form
+	// 		app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+	// 	} else {
+	// 		app.serverError(w, r, err)
+	// 	}
+	// 	return
+	// }
+
+	io.WriteString(w, s+name+email+passwd+"-|-"+iconBgColor+"-|-"+website)
 }
