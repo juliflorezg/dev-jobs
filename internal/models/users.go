@@ -12,7 +12,9 @@ import (
 
 type UserModelInterface interface {
 	Insert(name, email, password string, userType int) error
+	InsertCompany(name, logoSvg, logoBg, website string) error
 	Authenticate(email, password string) (int, error)
+	UserExists(email string) (bool, error)
 }
 
 type User struct {
@@ -61,4 +63,32 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 
 func (m *UserModel) Exists(id int) (bool, error) {
 	return false, nil
+}
+
+func (m *UserModel) UserExists(email string) (bool, error) {
+	return false, nil
+}
+
+func (m *UserModel) InsertCompany(name, logoSvg, logoBg, website string) error {
+
+	stmt := `INSERT INTO companies (name, logo_svg, logo_bg_color, website) 
+	VALUES(?, ?, ?, ?)`
+
+	_, err := m.DB.Exec(stmt, name, logoSvg, logoBg, website)
+
+	if err != nil {
+		var mySQLError *mysql.MySQLError
+		if errors.As(err, &mySQLError) {
+			if mySQLError.Number == 1062 && strings.Contains(mySQLError.Message, "companies_uc_name") {
+				return ErrDuplicateCompanyName
+			}
+			if mySQLError.Number == 1062 && strings.Contains(mySQLError.Message, "companies_uc_website") {
+				return ErrDuplicateCompanyWebsite
+			}
+		}
+
+		return err
+	}
+
+	return nil
 }
