@@ -17,6 +17,7 @@ type JobPostsFilterData struct {
 }
 type templateData struct {
 	CurrentYear int
+	Flash       string
 	JobPosts    []models.JobPost
 	JobPostsFilterData
 	Form    any
