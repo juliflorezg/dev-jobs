@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"net/http"
@@ -47,7 +46,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templateData := app.newTemplateData()
+	templateData := app.newTemplateData(r)
 	templateData.JobPosts = jobposts
 	templateData.Form = JobPostFilterForm{}
 	app.render(w, r, 200, "home.tmpl.html", templateData)
@@ -79,7 +78,7 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		data := app.newTemplateData()
+		data := app.newTemplateData(r)
 		data.JobPosts = jobposts
 
 		data.Form = form
@@ -93,7 +92,7 @@ func (app *application) homeFilterJobPosts(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	templateData := app.newTemplateData()
+	templateData := app.newTemplateData(r)
 	templateData.Form = form
 	jobPosts, err := app.jobPosts.FilterPosts(form.Position, form.Location, form.Contract)
 	if err != nil {
@@ -133,7 +132,7 @@ func (app *application) jobPostView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := app.newTemplateData()
+	data := app.newTemplateData(r)
 	data.JobPost = jobPost
 	app.render(w, r, 200, "viewJobPost.tmpl.html", data)
 
@@ -141,7 +140,7 @@ func (app *application) jobPostView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("sample response"))
-	data := app.newTemplateData()
+	data := app.newTemplateData(r)
 	data.Form = userSignUpForm{}
 	app.render(w, r, http.StatusOK, "userSignUp.tmpl.html", data)
 }
@@ -164,17 +163,17 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.IsValidPassword(form.Password), "password", "Your password must contain at least: one uppercase letter, one lowercase letter, one number and one special character (!\"@#$%^&*()?<>.-)")
 
 	if !form.Valid() {
-		data := app.newTemplateData()
+		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, r, http.StatusUnprocessableEntity, "userSignUp.tmpl.html", data)
 		return
 	}
 
-	err = app.users.Insert(form.Name, form.Email, form.Password, 1)
+	err = app.users.Insert(form.Name, form.Email, form.Password, 1) // 1 is for user type professional
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "This email address is already in use")
-			data := app.newTemplateData()
+			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, r, http.StatusUnprocessableEntity, "userSignUp.tmpl.html", data)
 		} else {
@@ -183,16 +182,23 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.sessionManager.Put(r.Context(), "flash", "Your sign up was successful. Please log in.")
+	app.sessionManager.Put(r.Context(), "flash", "Your sign-up was successful. Please log in.")
 
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 
 	// w.Write([]byte("create a new user..."))
 
 }
+
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = companySignUpForm{}
+	app.render(w, r, http.StatusOK, "userLogin.tmpl.html", data)
+}
+
 func (app *application) companySignUp(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("sample response"))
-	data := app.newTemplateData()
+	data := app.newTemplateData(r)
 	data.Form = companySignUpForm{}
 	app.render(w, r, http.StatusOK, "companySignUp.tmpl.html", data)
 }
@@ -230,15 +236,15 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 		Website:     website,
 	}
 
-	log.Println(name)
-	log.Println(email)
-	log.Println(passwd)
-	log.Println(iconBgColor)
-	log.Println(website)
+	// log.Println(name)
+	// log.Println(email)
+	// log.Println(passwd)
+	// log.Println(iconBgColor)
+	// log.Println(website)
 
-	fmt.Println()
-	fmt.Printf("%+v", form)
-	fmt.Println()
+	// fmt.Println()
+	// fmt.Printf("%+v", form)
+	// fmt.Println()
 
 	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
@@ -249,24 +255,51 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 	form.CheckField(validator.Matches(form.Website, validator.WebsiteRegex), "website", "Your company website doesn't match a URL pattern, try one of this formats: http://example.com, https://example.com, http://example.com/xyz, https://example.com.xyz http://www.example.com, https://www.example.com, http://www.example.com/xyz, https://www.example.com/xyz")
 
 	if !form.Valid() {
-		data := app.newTemplateData()
+		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
 		return
 	}
 
-	// err = app.users.Insert(form.Name, form.Email, form.Password, 2)
-	// if err != nil {
-	// 	if errors.Is(err, models.ErrDuplicateEmail) {
-	// 		form.AddFieldError("email", "This email address is already in use")
-	// 		data := app.newTemplateData()
-	// 		data.Form = form
-	// 		app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
-	// 	} else {
-	// 		app.serverError(w, r, err)
-	// 	}
-	// 	return
-	// }
+	err = app.users.Insert(form.Name, form.Email, form.Password, 2) // 2 is user_type company
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			form.AddFieldError("email", "This email address is already in use")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
 
-	io.WriteString(w, s+name+email+passwd+"-|-"+iconBgColor+"-|-"+website)
+	err = app.users.InsertCompany(form.Name, form.SVGIcon, form.IconBgColor, form.Website)
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateCompanyName) {
+			form.AddFieldError("name", "There is already a company with this name.")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+			} else if errors.Is(err, models.ErrDuplicateCompanyWebsite) {
+				form.AddFieldError("website", "There is already a company with this website.")
+				data := app.newTemplateData(r)
+				data.Form = form
+				app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+			}
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Your sign-up was successful Please log in.")
+
+	http.Redirect(w, r, "/company/login", http.StatusSeeOther)
+
+	// io.WriteString(w, s+name+email+passwd+"-|-"+iconBgColor+"-|-"+website)
+}
+
+func (app *application) companyLogin(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = companySignUpForm{}
+	app.render(w, r, http.StatusOK, "companyLogin.tmpl.html", data)
 }
