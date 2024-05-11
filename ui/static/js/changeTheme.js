@@ -8,14 +8,14 @@ function changeTheme(theme) {
     root.style.setProperty('--card-color', 'hsl(219, 29%, 14%)')
     root.style.setProperty('--text-titles', 'hsl(0, 0%, 100%')
     root.style.setProperty('--text-paragraph', 'hsl(214, 17%, 51%)')
-    e.target.dataset.activeTheme = 'dark'
+    toggleBtn.dataset.activeTheme = 'dark'
     
   } else if (theme === 'dark'){
     root.style.setProperty('--bg-color', 'hsl(210, 22%, 96%')
     root.style.setProperty('--card-color', 'hsl(0, 0%, 100%')
     root.style.setProperty('--text-titles', 'hsl(219, 29%, 14%')
     root.style.setProperty('--text-paragraph', 'hsl(210, 29%, 40%)')
-    e.target.dataset.activeTheme = 'light'
+    toggleBtn.dataset.activeTheme = 'light'
   }
 }
 
