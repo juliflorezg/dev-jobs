@@ -15,6 +15,8 @@ type UserModelInterface interface {
 	InsertCompany(name, logoSvg, logoBg, website string) error
 	Authenticate(email, password string) (int, error)
 	UserExists(email string) (bool, error)
+	GetLastUserCompanyCreated(email, name string) (int, int, error)
+	InsertCompanyUser(usrId, compId int) error
 }
 
 type User struct {
@@ -87,6 +89,48 @@ func (m *UserModel) InsertCompany(name, logoSvg, logoBg, website string) error {
 			}
 		}
 
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserModel) GetLastUserCompanyCreated(email, name string) (int, int, error) {
+
+	stmtUsers := `SELECT id FROM users WHERE email = ?`
+	stmtCompany := `SELECT company_id FROM companies WHERE name = ?`
+
+	rowUsr := m.DB.QueryRow(stmtUsers, email)
+	rowComp := m.DB.QueryRow(stmtCompany, name)
+
+	var usrId int
+	var compId int
+	err := rowUsr.Scan(&usrId)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, 0, ErrNoRecord
+		} else {
+			return 0, 0, err
+		}
+	}
+	err = rowComp.Scan(&compId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, 0, ErrNoRecord
+		} else {
+			return 0, 0, err
+		}
+	}
+
+	return usrId, compId, nil
+}
+
+func (m *UserModel) InsertCompanyUser(usrId, compId int) error{
+	stmt := `INSERT INTO users_employers (user_id, company_id) VALUES (?, ?)`
+
+	_, err := m.DB.Exec(stmt, usrId, compId)
+	if err != nil {
 		return err
 	}
 
