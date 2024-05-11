@@ -169,7 +169,7 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.users.Insert(form.Name, form.Email, form.Password, 1) // 1 is for user type professional
+	err = app.users.Insert(form.Name, form.Email, form.Password, models.UserTypeWorker)
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "This email address is already in use")
@@ -202,6 +202,7 @@ func (app *application) companySignUp(w http.ResponseWriter, r *http.Request) {
 	data.Form = companySignUpForm{}
 	app.render(w, r, http.StatusOK, "companySignUp.tmpl.html", data)
 }
+
 func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("sample response"))
 	var form companySignUpForm
@@ -261,7 +262,11 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.users.Insert(form.Name, form.Email, form.Password, 2) // 2 is user_type company
+	form.Name = formatCompanyName(form.Name)
+
+	// fmt.Println("form NAME:::", form.Name)
+
+	err = app.users.Insert(form.Name, form.Email, form.Password, models.UserTypeCompany)
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "This email address is already in use")
@@ -277,18 +282,36 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 	err = app.users.InsertCompany(form.Name, form.SVGIcon, form.IconBgColor, form.Website)
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateCompanyName) {
+			fmt.Println(err)
 			form.AddFieldError("name", "There is already a company with this name.")
 			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
-			} else if errors.Is(err, models.ErrDuplicateCompanyWebsite) {
-				form.AddFieldError("website", "There is already a company with this website.")
-				data := app.newTemplateData(r)
-				data.Form = form
-				app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
-			}
+		} else if errors.Is(err, models.ErrDuplicateCompanyWebsite) {
+			fmt.Println(err)
+			form.AddFieldError("website", "There is already a company with this website.")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, r, http.StatusUnprocessableEntity, "companySignUp.tmpl.html", data)
+		}
 		app.serverError(w, r, err)
 		return
+	}
+
+	// if user and company where created successfully we can insert a record in users_employers table with users.id and companies.company_id
+	usrId, compId, err := app.users.GetLastUserCompanyCreated(form.Email, form.Name)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	err = app.users.InsertCompanyUser(usrId, compId)
+	if err != nil {
+		app.serverError(w, r, err)
 	}
 
 	app.sessionManager.Put(r.Context(), "flash", "Your sign-up was successful Please log in.")
