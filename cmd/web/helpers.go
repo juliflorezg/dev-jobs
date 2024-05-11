@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/form/v4"
@@ -242,4 +243,19 @@ func min(a, b, c float64) float64 {
 
 func GetHSLColorStr(hsl HSL) string {
 	return fmt.Sprintf("hsl(%v, %v%%, %v%%)", hsl.Hue, hsl.Saturation, hsl.Lightness)
+}
+
+func formatCompanyName(name string) string {
+	nameLower := strings.ToLower(strings.Trim(name, " "))
+	nameWords := strings.Split(nameLower, " ")
+	formattedName := ""
+	for i, word := range nameWords {
+		if i < len(word)-1 {
+			formattedName += strings.ToUpper(string(word[0])) + word[1:] + " "
+		} else {
+			formattedName += strings.ToUpper(string(word[0])) + word[1:]
+		}
+	}
+
+	return strings.Trim(formattedName, " ")
 }
