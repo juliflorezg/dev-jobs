@@ -60,7 +60,33 @@ func (m *UserModel) Insert(name, email, password string, userType int) error {
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
-	return 0, nil
+	// return 0, nil
+
+	var id int
+	var hashedPassword []byte
+
+	stmt := `SELECT id, hashed_password FROM users WHERE email = ?`
+
+	err := m.DB.QueryRow(stmt, email).Scan(&id, &hashedPassword)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+
+	return id, nil
 }
 
 func (m *UserModel) Exists(id int) (bool, error) {
@@ -126,7 +152,7 @@ func (m *UserModel) GetLastUserCompanyCreated(email, name string) (int, int, err
 	return usrId, compId, nil
 }
 
-func (m *UserModel) InsertCompanyUser(usrId, compId int) error{
+func (m *UserModel) InsertCompanyUser(usrId, compId int) error {
 	stmt := `INSERT INTO users_employers (user_id, company_id) VALUES (?, ?)`
 
 	_, err := m.DB.Exec(stmt, usrId, compId)
