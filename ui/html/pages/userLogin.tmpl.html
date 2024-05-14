@@ -1,7 +1,10 @@
 {{define "title"}}User Login{{end}} {{define "main"}}
-<form action="/user/login" method="POST" novalidate class="user-signup-form">
+<form action="/user/signin" method="POST" novalidate class="user-signup-form">
   <!-- include the CSRF token -->
   <!-- <input type="hidden" name="csrf_token" value="" /> -->
+  {{range .Form.NonFieldErrors}}
+  <div class="login-error">{{.}}</div>
+  {{end}}
   <div class="user-signup-form__container">
     <label>Email:</label>
     {{with .Form.FieldErrors.email}}

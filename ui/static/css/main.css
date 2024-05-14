@@ -717,6 +717,18 @@ background-color: var(--card-color);
   border: 2px solid #c60038;
 }
 
+/* login error message */
+.login-error{
+  margin-bottom: 1.5rem;
+  padding-block: .75rem;
+  border-radius: .5rem;
+  /* border: 1px solid #c60038; */
+  text-align: center;
+  color: #c60038;
+  background-color: var(--card-color);
+}
+
+
 .user-signup-form__container input[type='file'] {
   cursor: pointer;
   transition: all 0.25s ease-in-out;
