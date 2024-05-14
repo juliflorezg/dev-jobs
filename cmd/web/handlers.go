@@ -36,6 +36,12 @@ type companySignUpForm struct {
 	validator.Validator `form:"-"`
 }
 
+type userLoginForm struct {
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte("main page, here i'll put the list of job posts"))
 
@@ -325,4 +331,48 @@ func (app *application) companyLogin(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = companySignUpForm{}
 	app.render(w, r, http.StatusOK, "companyLogin.tmpl.html", data)
+}
+
+func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
+	var form userLoginForm
+
+	err := app.decodeForm(w, r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Email), "email", "Please provide your email to sign in.")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", "This field must be a valid email address.")
+	form.CheckField(validator.NotBlank(form.Password), "password", "Please provide your password to sign in.")
+
+	id, err := app.users.Authenticate(form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form.AddNonFieldError("Your email or password is incorrect")
+
+			data := app.newTemplateData(r)
+			data.Form = form
+
+			// fmt.Println(id)
+			if r.URL.RequestURI() == "/user/signin" {
+				app.render(w, r, http.StatusOK, "userLogin.tmpl.html", data)
+			} else if r.URL.RequestURI() == "/company/signin" {
+				app.render(w, r, http.StatusOK, "companyLogin.tmpl.html", data)
+			}
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	err = app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
