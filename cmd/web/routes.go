@@ -30,6 +30,10 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodPost, "/user/signin", dynamic.ThenFunc(app.userLoginPost))
 	router.Handler(http.MethodPost, "/company/signin", dynamic.ThenFunc(app.userLoginPost))
 
+	protected := dynamic.Append(app.requireAuthentication)
+
+	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
+
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
 	return standard.Then(router)
