@@ -20,8 +20,10 @@ type templateData struct {
 	Flash       string
 	JobPosts    []models.JobPost
 	JobPostsFilterData
-	Form    any
-	JobPost models.JobPost
+	Form            any
+	JobPost         models.JobPost
+	IsAuthenticated bool
+	UserType        int
 }
 
 func humanDate(t time.Time) string {
