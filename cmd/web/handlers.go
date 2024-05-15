@@ -346,7 +346,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", "This field must be a valid email address.")
 	form.CheckField(validator.NotBlank(form.Password), "password", "Please provide your password to sign in.")
 
-	id, err := app.users.Authenticate(form.Email, form.Password)
+	id, userType, err := app.users.Authenticate(form.Email, form.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {
 			form.AddNonFieldError("Your email or password is incorrect")
@@ -373,6 +373,23 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+	app.sessionManager.Put(r.Context(), "userType", userType)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+	err := app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Remove(r.Context(), "userType")
+
+	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully.")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 }
