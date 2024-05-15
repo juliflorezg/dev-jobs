@@ -13,7 +13,7 @@ import (
 type UserModelInterface interface {
 	Insert(name, email, password string, userType int) error
 	InsertCompany(name, logoSvg, logoBg, website string) error
-	Authenticate(email, password string) (int, error)
+	Authenticate(email, password string) (int, int, error)
 	UserExists(email string) (bool, error)
 	GetLastUserCompanyCreated(email, name string) (int, int, error)
 	InsertCompanyUser(usrId, compId int) error
@@ -59,34 +59,35 @@ func (m *UserModel) Insert(name, email, password string, userType int) error {
 	return nil
 }
 
-func (m *UserModel) Authenticate(email, password string) (int, error) {
+func (m *UserModel) Authenticate(email, password string) (int, int, error) {
 	// return 0, nil
 
 	var id int
 	var hashedPassword []byte
+	var usrType int
 
-	stmt := `SELECT id, hashed_password FROM users WHERE email = ?`
+	stmt := `SELECT id, hashed_password, type FROM users WHERE email = ?`
 
-	err := m.DB.QueryRow(stmt, email).Scan(&id, &hashedPassword)
+	err := m.DB.QueryRow(stmt, email).Scan(&id, &hashedPassword, &usrType)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, ErrInvalidCredentials
+			return 0, 0, ErrInvalidCredentials
 		} else {
-			return 0, err
+			return 0, 0, err
 		}
 	}
 
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return 0, ErrInvalidCredentials
+			return 0, 0, ErrInvalidCredentials
 		} else {
-			return 0, err
+			return 0, 0, err
 		}
 	}
 
-	return id, nil
+	return id, usrType, nil
 }
 
 func (m *UserModel) Exists(id int) (bool, error) {
