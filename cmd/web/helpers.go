@@ -53,7 +53,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 	ts, ok := app.templateCache[page]
 
 	if !ok {
-		err := fmt.Errorf("The template %s does not exist", page)
+		err := fmt.Errorf("the template %s does not exist", page)
 		app.serverError(w, r, err)
 		return
 	}
@@ -72,8 +72,10 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 func (app *application) newTemplateData(r *http.Request) templateData {
 
 	return templateData{
-		CurrentYear: time.Now().Year(),
-		Flash:       app.sessionManager.PopString(r.Context(), "flash"),
+		CurrentYear:     time.Now().Year(),
+		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
+		IsAuthenticated: app.isAuthenticated(r),
+		UserType:        app.getUserType(r),
 	}
 }
 
@@ -258,4 +260,12 @@ func formatCompanyName(name string) string {
 	}
 
 	return strings.Trim(formattedName, " ")
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+}
+
+func (app *application) getUserType(r *http.Request) int {
+	return app.sessionManager.GetInt(r.Context(), "userType")
 }
