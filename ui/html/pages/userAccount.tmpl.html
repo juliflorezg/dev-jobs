@@ -1,0 +1,23 @@
+{{define "title"}}My Account{{end}} {{define "main"}}
+
+<div class="user-account-container">
+  <h1>My Account</h1>
+  <div class="user-account-container__personal-info">
+    <h2 class="user-account-container__personal-info-title">Personal Information</h2>
+    <div class="user-account-container__personal-info-container">
+      <div class="personal-info-container__row">
+        <span>Name:</span>
+        <span>{{.User.Name}}</span>
+      </div>
+      <div class="personal-info-container__row">
+        <span>Email:</span>
+        <span>{{.User.Email}}</span>
+      </div>
+      <div class="personal-info-container__row">
+        <span>Created:</span>
+        <span>{{humanDate .User.Created}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

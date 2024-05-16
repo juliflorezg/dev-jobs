@@ -24,6 +24,7 @@ type templateData struct {
 	JobPost         models.JobPost
 	IsAuthenticated bool
 	UserType        int
+	User            models.User
 }
 
 func humanDate(t time.Time) string {
