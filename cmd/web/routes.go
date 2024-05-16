@@ -33,6 +33,7 @@ func (app *application) routes() http.Handler {
 	protected := dynamic.Append(app.requireAuthentication)
 
 	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
+	router.Handler(http.MethodGet, "/user/account", protected.ThenFunc(app.userAccount))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
