@@ -393,3 +393,31 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 }
+
+func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
+
+	// Get User info
+	userId := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	user, err := app.users.Get(userId)
+
+	templateData := app.newTemplateData(r)
+	templateData.User = user
+
+	fmt.Println()
+	fmt.Println("user Id", userId)
+	fmt.Printf("user%+v", user)
+	fmt.Println()
+
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	// Get either user job applications or user JobPosts
+	app.render(w, r, http.StatusOK, "userAccount.tmpl.html", templateData)
+}
