@@ -190,7 +190,7 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Your sign-up was successful. Please log in.")
 
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
 
 	// w.Write([]byte("create a new user..."))
 
@@ -322,7 +322,7 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 
 	app.sessionManager.Put(r.Context(), "flash", "Your sign-up was successful Please log in.")
 
-	http.Redirect(w, r, "/company/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/company/signin", http.StatusSeeOther)
 
 	// io.WriteString(w, s+name+email+passwd+"-|-"+iconBgColor+"-|-"+website)
 }
