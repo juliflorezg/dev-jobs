@@ -287,6 +287,14 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 
 	err = app.users.InsertCompany(form.Name, form.SVGIcon, form.IconBgColor, form.Website)
 	if err != nil {
+		// if user tries to create a new company with a name or a website of a company already created in db,
+		// delete the user created in previous insert 🔝
+		if errors.Is(err, models.ErrDuplicateCompanyName) || errors.Is(err, models.ErrDuplicateCompanyWebsite) {
+			err := app.users.Delete(form.Email)
+			if err != nil {
+				app.serverError(w, r, err)
+			}
+		}
 		if errors.Is(err, models.ErrDuplicateCompanyName) {
 			fmt.Println(err)
 			form.AddFieldError("name", "There is already a company with this name.")
@@ -398,6 +406,7 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 
 	// Get User info
 	userId := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	// userType := app.sessionManager.GetInt(r.Context(), "userType")
 
 	user, err := app.users.Get(userId)
 
@@ -419,5 +428,24 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get either user job applications or user JobPosts
+
+	if user.Type == models.UserTypeWorker {
+		// todo:: get job applications, but first: create the job application page
+	} else if user.Type == models.UserTypeCompany {
+		// jobPosts := []models.JobPost{{ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}}
+		fmt.Println("~~~~~~ get all company jobposts:::")
+		jobPosts, err := app.users.GetAllJobPostByCompany(user.Name)
+
+		if err != nil {
+			app.serverError(w, r, err)
+		}
+
+		fmt.Println()
+		fmt.Printf("jobPosts: %+v\n", jobPosts)
+		fmt.Println()
+
+		templateData.JobPosts = jobPosts
+	}
+
 	app.render(w, r, http.StatusOK, "userAccount.tmpl.html", templateData)
 }
