@@ -1,7 +1,8 @@
 {{define "title"}}My Account{{end}} {{define "main"}}
 
 <div class="user-account-container">
-  <h1>My Account</h1>
+  <h1 class="user-account-container__title">My Account</h1>
+  <!-- personal info -->
   <div class="user-account-container__personal-info">
     <h2 class="user-account-container__personal-info-title">Personal Information</h2>
     <div class="user-account-container__personal-info-container">
@@ -18,6 +19,93 @@
         <span>{{humanDate .User.Created}}</span>
       </div>
     </div>
+  </div>
+
+  <!-- user job applications / jobposts list -->
+  <div class="user-account-container__personal-info pd-bottom-4">
+    {{if (eq .User.Type 1)}}
+      <h2 class="user-account-container__personal-info-title"> My Job Applications</h2>
+    {{end}}
+    {{if (eq .User.Type 2)}}
+      <h2 class="user-account-container__personal-info-title"> My JobPosts</h2>
+    {{end}}
+    
+    {{if (eq .User.Type 1)}}
+      <div class="user-account-container__jobapplications-list-container">      
+        <p>amount of job applications for this user::{{len .JobApplications}}</p>
+          {{range .JobApplications}}
+            <div class="jobapplications-list-container__child-item">
+              <div>
+                <span>{{.Position}}</span>
+                <span>Company {{.Company}}</span>
+                <span>You applied at: {{.AppliedAt}}</span>
+              </div>
+              <div>
+                <span> Contract Type: {{.Contract}}</span>
+                <span> Location: {{.Location}}</span>
+                <span> Posted at: {{.PostedAt}}</span>
+              </div>
+            </div>
+          {{else}}
+            <div>
+              <span>You haven't applied to any JobPost yet.</span>
+            </div>
+          {{end}}
+
+          {{if (gt (len .JobApplications) 0)}}
+            <div class="jobapplications-list-container__child-item--btn">
+              <a href="/">Manage my job applications</a>
+            </div>
+          {{else}}
+            <div class="jobapplications-list-container__child-item--btn">
+              <a href="/">Browse JobPosts</a>
+            </div>
+          {{end}}
+        </div>
+    {{end}}
+      
+    {{if (eq .User.Type 2)}}
+      <div class="user-account-container__jobposts-list-container">      
+        <p>amount of jobposts for this company::{{len .JobPosts}}</p>
+        {{range .JobPosts}}
+          <div class="jobposts-list-container__child-item">
+            <div>
+              <span class="jobposts-list-container__child-item--position">{{.Position}}</span>
+              <p>
+                <span class="jobposts-list-container__child-item--contract">Contract Type: </span>
+                <span>{{.Contract}}</span>
+              </p>
+            </div>
+            <div>
+              <p>
+                <span class="jobposts-list-container__child-item--location">Location: </span>
+                <span>{{.Location}}</span>
+              </p>
+              <p>
+                <span class="jobposts-list-container__child-item--postedat">Posted at: </span>
+                <span>{{humanDate .PostedAt}}</span>
+              </p>
+              <a href="/jobpost/view/{{.ID}}">See JobPost</a>
+            </div>
+          </div>
+        {{else}}
+          <div>
+            <span>You haven't published any JobPost yet.</span>
+          </div>
+        {{end}}
+
+        {{if (gt (len .JobPosts) 0)}}
+          <div class="jobapplications-list-container__child-item--btn">
+            <a href="/">Manage my JobPosts</a>
+          </div>
+        {{else}}
+          <div class="jobapplications-list-container__child-item--btn">
+            <a href="/account/create/jobpost">Publish a JobPost</a>
+          </div>
+        {{end}}
+      </div>
+    {{end}}
+
   </div>
 </div>
 {{end}}
