@@ -18,6 +18,8 @@ type UserModelInterface interface {
 	UserExists(email string) (bool, error)
 	GetLastUserCompanyCreated(email, name string) (int, int, error)
 	InsertCompanyUser(usrId, compId int) error
+	GetAllJobPostByCompany(compName string) ([]JobPost, error)
+	Delete(email string) error
 }
 
 type User struct {
@@ -26,7 +28,7 @@ type User struct {
 	Email          string
 	HashedPassword []byte
 	Created        time.Time
-	Type           string
+	Type           int
 }
 
 type UserModel struct {
@@ -181,4 +183,55 @@ func (m *UserModel) Get(id int) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (m *UserModel) GetAllJobPostByCompany(compName string) ([]JobPost, error) {
+
+	stmtCompID := `SELECT company_id from companies WHERE name = ?`
+
+	stmt := `SELECT job_post_id, position, contract, location, posted_at FROM jobposts WHERE company_id = ?`
+
+	var compId int
+	var jobPosts []JobPost
+
+	err := m.DB.QueryRow(stmtCompID, compName).Scan(&compId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	rows, err := m.DB.Query(stmt, compId)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var jp JobPost
+
+		err := rows.Scan(&jp.ID, &jp.Position, &jp.Contract, &jp.Location, &jp.PostedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		jobPosts = append(jobPosts, jp)
+	}
+
+	return jobPosts, nil
+}
+
+func (m *UserModel) Delete(email string) error {
+	stmt := `DELETE FROM users WHERE email = ?`
+
+	_, err := m.DB.Exec(stmt, email)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
