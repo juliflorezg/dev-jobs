@@ -449,3 +449,11 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 
 	app.render(w, r, http.StatusOK, "userAccount.tmpl.html", templateData)
 }
+
+func (app *application) userCreateJobPost(w http.ResponseWriter, r *http.Request) {
+	// w.Write([]byte("render page for publish a jobpost"))
+
+	data := app.newTemplateData(r)
+	// data.Form = companySignUpForm{}
+	app.render(w, r, http.StatusOK, "createJobPost.tmpl.html", data)
+}
