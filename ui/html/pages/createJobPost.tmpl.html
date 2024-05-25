@@ -2,7 +2,7 @@
 
 <div class="create-jobpost-container">
   <h1>Create a JobPost</h1>
-  <form action="/account/create/jobpost" class="create-jobpost-container__form" id="createJobpostForm">
+  <form action="/account/create/jobpost" class="create-jobpost-container__form" id="createJobPostForm">
     <div class="create-jobpost-container__form-group">
       <label for="positicreateJobpostFormPositionon">Position</label>
       <input type="text" name="position" id="createJobpostFormPosition">
@@ -270,13 +270,15 @@
     <p class="pd-left-2">List of Requirements</p>
     <div class="create-jobpost-container__form-req-list-container m-left-2 m-bottom-2">
       <ul id="createJobPostFormReqList">
-        <li>5-7 years of experience in infrastructure engineering of applications</li>
+        <!-- <li>5-7 years of experience in infrastructure engineering of applications</li>
         <li>Experience in web application security analysis and resolution.</li>
         <li>Experience working within a modern Javascript workflow through technologies such as: GitHub, CSS Preprocessors, Styled Components, Single Page Application frameworks and Module Bundlers (Webpack etc.)</li>
         <li>Experience in implementing A/B Tests</li>
-        <li>Hands on experience with React/Redux in a production application</li>
+        <li>Hands on experience with React/Redux in a production application</li> -->
       </ul>
-      <button id="editReqList" data-is-editing="false" type="button"></button>
+      <div class="form-req-list-container__list-buttons">
+        <button id="editReqList" data-is-editing="false" type="button"></button>
+      </div>
     </div>
     
     <h2>Role</h2>
@@ -287,16 +289,18 @@
     <p class="pd-left-2">List of responsibilities</p>
     <div class="create-jobpost-container__form-req-list-container m-left-2">
       <ol id="createJobPostFormRoleList">
-        <li>5-7 years of experience in infrastructure engineering of applications</li>
+        <!-- <li>5-7 years of experience in infrastructure engineering of applications</li>
         <li>Experience in web application security analysis and resolution.</li>
         <li>Experience working within a modern Javascript workflow through technologies such as: GitHub, CSS Preprocessors,Styled Components, Single Page Application frameworks and Module Bundlers (Webpack etc.)</li>
         <li>Experience in implementing A/B Tests</li>
-        <li>Hands on experience with React/Redux in a production application</li>
+        <li>Hands on experience with React/Redux in a production application</li> -->
       </ol>
-      <button id="editRoleList" data-is-editing="false" type="button"></button>
+      <div class="form-req-list-container__list-buttons">
+        <button id="editRoleList" data-is-editing="false" type="button"></button>
+      </div>
     </div>
 
-    
+    <!-- <hr> -->
     <button type="submit">Submit</button>
   </form>
 </div>
