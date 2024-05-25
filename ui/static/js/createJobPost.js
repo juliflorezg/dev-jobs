@@ -1,14 +1,14 @@
-// edit req/roles list button text content
+const createJobPostForm = document.getElementById('createJobPostForm')
 const createJobPostFormReqList = document.getElementById('createJobPostFormReqList')
-const editReqList = document.getElementById('editReqList')
+const editReqListBtn = document.getElementById('editReqList')
 const createJobPostFormRoleList = document.getElementById('createJobPostFormRoleList')
-const editRoleList = document.getElementById('editRoleList')
+const editRoleListBtn = document.getElementById('editRoleList')
 
 const getListItemEditContent = (content, isEditing) => `
   <textarea maxlength="200" disabled oninput='this.style.height = "";this.style.height = this.scrollHeight + 3 + "px"'>${content}</textarea>
   <div class="req-list__editing-item--buttons">
     <div>
-    ${isEditing
+    ${isEditing   // check mark
     ? `<svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -24,7 +24,8 @@ const getListItemEditContent = (content, isEditing) => `
           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
           <path d="M5 12l5 5l10 -10" />x
         </svg>`
-    : `<svg
+    // pencil 
+    : `<svg          
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
@@ -62,179 +63,306 @@ function createListElementEditing(content) {
   listElement.innerHTML = getListItemEditContent(content, false)
   listElement.classList.add('req-list__editing-item')
 
+  listElement.children[0].addEventListener('input', function (e) {
+    console.log(e.target.value);
+    e.target.textContent = e.target.value
+  })
+
   return listElement
 }
 
-// console.log(createJobPostFormReqList.children)
-// console.log(createJobPostFormReqList.children.length)
+function listenerForEditBtn(target) {
+  const icon = target
+  const iconDivParent = target.parentElement
+  console.log('click on', icon)
+  console.log('parent el', iconDivParent)
+
+  if (
+    icon.closest('.req-list__editing-item--buttons').previousElementSibling
+      .disabled === true
+  ) {
+    console.log('click on', icon)
+    console.log('parent el', iconDivParent)
+    console.log('last el of parent el', iconDivParent.lastElementChild)
+    console.log('this will focus the textarea an allow editing')
+
+    console.log(icon.closest('.req-list__editing-item--buttons'))
+    console.log(
+      icon.closest('.req-list__editing-item--buttons').previousElementSibling
+    )
+    // enable the textarea and focus it
+    icon.closest(
+      '.req-list__editing-item--buttons'
+    ).previousElementSibling.disabled = false
+    icon
+      .closest('.req-list__editing-item--buttons')
+      .previousElementSibling.focus()
+
+    //change the icon
+    let iconSVG = iconDivParent.lastElementChild
+    while (iconSVG) {
+      iconDivParent.removeChild(iconSVG)
+      iconSVG = iconDivParent.lastElementChild
+    }
+    iconDivParent.innerHTML = `<svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-check"
+                >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 12l5 5l10 -10" />
+                </svg>`
+  } else {
+    icon.closest(
+      '.req-list__editing-item--buttons'
+    ).previousElementSibling.disabled = true
+
+    //set textarea.content
+    console.log(
+      icon.closest('.req-list__editing-item--buttons').previousElementSibling
+        .textContent
+    )
+
+    //change the icon
+    let iconSVG = iconDivParent.lastElementChild
+    while (iconSVG) {
+      iconDivParent.removeChild(iconSVG)
+      iconSVG = iconDivParent.lastElementChild
+    }
+    iconDivParent.innerHTML = `<svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"
+                >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+                <path d="M13.5 6.5l4 4" />
+                </svg>`
+  }
+}
+
+function listenerForDeleteBtn(target) {
+  const icon = target
+  const iconDivParent = target.parentElement
+  const liElementToRemove = iconDivParent.closest('.req-list__editing-item')
+  console.log(icon)
+  console.log(iconDivParent)
+
+  liElementToRemove.remove()
+}
+
+function manageEditButtonAction(btn, list) {
+  console.log(btn.dataset.isEditing)
+  if (btn.dataset.isEditing === 'false') {
+    //~~~   enter editing state
+
+    //> add another button before edit btn that says 'add an element'
+    {
+      const newBtnForAddLI = document.createElement('BUTTON')
+      newBtnForAddLI.textContent = 'Add an element'
+      newBtnForAddLI.classList.add('list-buttons__normal-btn')
+      btn.parentElement.insertBefore(newBtnForAddLI, btn)
+
+      newBtnForAddLI.addEventListener('click', function (e) {
+        e.preventDefault()
+        list.appendChild(createListElementEditing(''))
+
+        let currentAmountOfLis = list.children.length
+        console.log(currentAmountOfLis)
+
+        list.children[
+          currentAmountOfLis - 1
+        ].children[0].disabled = false
+        list.children[
+          currentAmountOfLis - 1
+        ].children[0].focus()
+
+        //> add listeners to buttons
+        list.children[
+          currentAmountOfLis - 1
+        ].children[1].children[0].addEventListener('click', function (e) {
+          listenerForEditBtn(e.target)
+        })
+
+        list.children[
+          currentAmountOfLis - 1
+        ].children[1].children[1].addEventListener('click', function (e) {
+          listenerForDeleteBtn(e.target)
+        })
+      })
+    }
+
+    console.log(
+      'amount of elements in req list',
+      list.children.length
+    )
+    if (list.children.length === 0) {
+      // add a single list item ready for enter description
+      list.appendChild(document.createElement('li'))
+      list.children[0].classList.add(
+        'req-list__editing-item'
+      )
+      list.children[0].innerHTML = getListItemEditContent(
+        '',
+        true
+      )
+      list.children[0].children[0].disabled = false
+      list.children[0].children[0].focus()
+    } else {
+      // get list items text content
+      console.log('get list items text content')
+
+      // const reqItemsText = []
+      const newReqItems = []
+
+      for (let i = 0; i < list.children.length; i++) {
+        // reqItemsText.push(list.children[i].textContent.trim())
+
+        const newElement = createListElementEditing(
+          list.children[i].textContent.trim()
+        )
+        newReqItems.push(newElement)
+
+        // list.appendChild(
+        //   newElement
+        // )
+      }
+      // console.log(reqItemsText);
+      console.log(newReqItems)
+      //delete child elements
+      let lastListElement = list.lastElementChild
+      while (lastListElement) {
+        list.removeChild(lastListElement)
+        lastListElement = list.lastElementChild
+      }
+
+      list.append(...newReqItems)
+
+      for (let i = 0; i < list.children.length; i++) {
+        const listElement = list.children[i]
+
+        // modify textarea height
+        // target the textarea inside the li element and re-set its height
+        listElement.children[0].style.height =
+          listElement.children[0].scrollHeight + 3 + 'px'
+
+        // append listeners for edit btn
+        listElement.children[1].children[0].addEventListener(
+          'click',
+          function (e) {
+            listenerForEditBtn(e.target)
+          }
+        )
+
+        // append listeners for delete btn
+        listElement.children[1].children[1].addEventListener(
+          'click',
+          function (e) {
+            listenerForDeleteBtn(e.target)
+          }
+        )
+      }
+    }
+
+    btn.dataset.isEditing = 'true'
+    btn.textContent = 'Done'
+  } else {
+    // exit editing state
+
+    btn.dataset.isEditing = 'false'
+    btn.textContent = 'Edit'
+    btn.previousElementSibling.remove()
+
+    // loop over the list and get the text in each text area (only those that have a text other than "")
+    const newReqItems = []
+
+    for (let i = 0; i < list.children.length; i++) {
+      const li = list.children[i]
+
+      // console.log(li);
+      // console.log(li.children[0].textContent);
+
+      if (li.children[0].textContent.trim().length > 0) {
+        const newElement = document.createElement('LI')
+        newElement.textContent = li.children[0].textContent.trim()
+        newReqItems.push(newElement)
+      } else {
+        continue
+      }
+    }
+    // console.log(reqItemsText);
+    console.log(newReqItems)
+    //delete child elements
+    let lastListElement = list.lastElementChild
+    while (lastListElement) {
+      list.removeChild(lastListElement)
+      lastListElement = list.lastElementChild
+    }
+
+    list.append(...newReqItems)
+  }
+}
 
 if (createJobPostFormReqList) {
   if (createJobPostFormReqList.children.length > 0) {
-    editReqList.textContent = 'Edit'
+    editReqListBtn.textContent = 'Edit'
   } else {
-    editReqList.textContent = 'Add a requirement'
+    editReqListBtn.textContent = 'Add a requirement'
   }
 }
 
 if (createJobPostFormRoleList) {
   if (createJobPostFormRoleList.children.length > 0) {
-    editRoleList.textContent = 'Edit'
+    editRoleListBtn.textContent = 'Edit'
   } else {
-    editRoleList.textContent = 'Add a task'
+    editRoleListBtn.textContent = 'Add a task'
   }
 }
 
 // add behavior for edit req list button
-if (editReqList) {
-  editReqList.addEventListener('click', function (e) {
-    //~~~   enter editing state
-    console.log(editReqList.dataset.isEditing);
-    if (editReqList.dataset.isEditing === 'false') {
-      console.log(
-        'amount of elements in req list',
-        createJobPostFormReqList.children.length
-      )
-      // const amountOfCurrentItems = createJobPostFormReqList.children.length
-      if (createJobPostFormReqList.children.length === 0) {
-        createJobPostFormReqList.appendChild(document.createElement('li'))
-        createJobPostFormReqList.children[0].innerHTML = getListItemEditContent('', true)
-        createJobPostFormReqList.children[0].classList.add('req-list__editing-item')
-        createJobPostFormReqList.children[0].children[0].focus()
-      } else {
-        // get list items text content
-        console.log('get list items text content')
+if (editReqListBtn) {
+  editReqListBtn.addEventListener('click', function (e) {
+    console.log(editReqListBtn.dataset.isEditing);
 
-        const reqItemsText = []
-        const newReqItems = []
-
-        for (let i = 0; i < createJobPostFormReqList.children.length; i++) {
-          reqItemsText.push(createJobPostFormReqList.children[i].textContent.trim())
-
-          const newElement = createListElementEditing(
-            createJobPostFormReqList.children[i].textContent.trim()
-          )
-          newReqItems.push(
-            newElement
-          )
-
-          // createJobPostFormReqList.appendChild(
-          //   newElement
-          // )
-        }
-        console.log(reqItemsText);
-        console.log(newReqItems);
-        //delete child elements
-        let lastListElement = createJobPostFormReqList.lastElementChild
-        while (lastListElement) {
-          createJobPostFormReqList.removeChild(lastListElement)
-          lastListElement = createJobPostFormReqList.lastElementChild
-        }
-
-        createJobPostFormReqList.append(
-          ...newReqItems
-        )
-
-        // modify textarea height
-        for (let i = 0; i < createJobPostFormReqList.children.length; i++) {
-          // target the textarea inside the li element and re-set its height
-          createJobPostFormReqList.children[i].children[0].style.height =
-            createJobPostFormReqList.children[i].children[0].scrollHeight + 3 + 'px'
-
-            
-          // append listeners for edit btn
-          createJobPostFormReqList.children[i].children[1].children[0].addEventListener('click', function (e) {
-            
-            const icon = e.target
-            const iconDivParent = e.target.parentElement
-            
-            if (icon.closest('.req-list__editing-item--buttons').previousElementSibling.disabled === true) {
-
-              console.log('click on', icon);
-              console.log('parent el', iconDivParent);
-              console.log('last el of parent el', iconDivParent.lastElementChild);
-              console.log('this will focus the textarea an allow editing');
-              
-              console.log(icon.closest('.req-list__editing-item--buttons'))
-              console.log(icon.closest('.req-list__editing-item--buttons').previousElementSibling)
-              // enable the textarea and focus it
-              icon.closest('.req-list__editing-item--buttons').previousElementSibling.disabled = false
-              icon.closest('.req-list__editing-item--buttons').previousElementSibling.focus()
-              
-              
-              //change the icon
-              let iconSVG = iconDivParent.lastElementChild
-              while (iconSVG) {
-                iconDivParent.removeChild(iconSVG)
-                iconSVG = iconDivParent.lastElementChild
-              }
-              iconDivParent.innerHTML = `<svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ffffff"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="icon icon-tabler icons-tabler-outline icon-tabler-check"
-              >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 12l5 5l10 -10" />
-              </svg>`
-            } else {
-              icon.closest('.req-list__editing-item--buttons').previousElementSibling.disabled = true
-              // icon.closest('.req-list__editing-item--buttons').previousElementSibling.focus()
-              
-              
-              //change the icon
-              let iconSVG = iconDivParent.lastElementChild
-              while (iconSVG) {
-                iconDivParent.removeChild(iconSVG)
-                iconSVG = iconDivParent.lastElementChild
-              }
-              iconDivParent.innerHTML = `<svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ffffff"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"
-              >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
-              <path d="M13.5 6.5l4 4" />
-              </svg>`                
-            }
-          })
-
-          // append listeners for delete btn
-          createJobPostFormReqList.children[i].children[1].children[1].addEventListener('click', function (e) {
-            const icon = e.target
-            const iconDivParent = e.target.parentElement
-            const liElementToRemove = iconDivParent.closest(
-              '.req-list__editing-item'
-            )
-            console.log(icon);
-            console.log(iconDivParent);
-
-            liElementToRemove.remove()            
-          })
-        }
-      }
-
-      editReqList.dataset.isEditing = 'true'
-      editReqList.textContent = 'Done'
-      
-    } else { // exit editing state
-      editReqList.dataset.isEditing = 'false'
-      editReqList.textContent = 'Edit'
-      
-    }
-
+    manageEditButtonAction(editReqListBtn, createJobPostFormReqList)
   })
 } 
+
+if (editRoleListBtn) {
+  editRoleListBtn.addEventListener('click', function (e) {
+    console.log(editRoleListBtn.dataset.isEditing);
+
+    manageEditButtonAction(editRoleListBtn, createJobPostFormRoleList)
+  })
+} 
+
+
+// manage form submission
+createJobPostForm.addEventListener('submit', function(e){
+  e.preventDefault()
+
+  if (editReqListBtn.dataset.isEditing === "true"){
+    console.log('still editing reqs, please confirm you requirements and try again');
+
+    editReqListBtn.closest('.create-jobpost-container__form-req-list-container').classList.add('border-error-xs')
+  }
+
+
+  // fetch('/account/create/jobpost', {
+  //   body: JSON.stringify(jobPostData)
+  // })
+})
