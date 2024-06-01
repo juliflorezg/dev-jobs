@@ -450,10 +450,26 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "userAccount.tmpl.html", templateData)
 }
 
-func (app *application) userCreateJobPost(w http.ResponseWriter, r *http.Request) {
+func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Request) {
 	// w.Write([]byte("render page for publish a jobpost"))
 
 	data := app.newTemplateData(r)
 	// data.Form = companySignUpForm{}
 	app.render(w, r, http.StatusOK, "createJobPost.tmpl.html", data)
+}
+
+func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println()
+	fmt.Println(r.Body)
+	fmt.Println()
+
+	var form userLoginForm
+
+	err := app.decodeForm(w, r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
 }
