@@ -1085,6 +1085,14 @@ label[for='location'] {
   filter: brightness(.85);
 }
 
+.create-jobpost-container .form-error {
+  margin-inline: 0 !important;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700 !important;
+  color: red !important;
+}
+
 .create-jobpost-container p {
   margin-bottom: .75rem;
 }
