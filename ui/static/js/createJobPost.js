@@ -85,22 +85,11 @@ function createListElementEditing(content, isEditing) {
 function listenerForEditBtn(target) {
   const icon = target
   const iconDivParent = target.parentElement
-  console.log('click on', icon)
-  console.log('parent el', iconDivParent)
 
   if (
     icon.closest('.req-list__editing-item--buttons').previousElementSibling
       .disabled === true
   ) {
-    console.log('click on', icon)
-    console.log('parent el', iconDivParent)
-    console.log('last el of parent el', iconDivParent.lastElementChild)
-    console.log('this will focus the textarea an allow editing')
-
-    console.log(icon.closest('.req-list__editing-item--buttons'))
-    console.log(
-      icon.closest('.req-list__editing-item--buttons').previousElementSibling
-    )
     // enable the textarea and focus it
     icon.closest(
       '.req-list__editing-item--buttons'
@@ -135,11 +124,6 @@ function listenerForEditBtn(target) {
       '.req-list__editing-item--buttons'
     ).previousElementSibling.disabled = true
 
-    //set textarea.content
-    console.log(
-      icon.closest('.req-list__editing-item--buttons').previousElementSibling
-        .textContent
-    )
 
     //change the icon
     let iconSVG = iconDivParent.lastElementChild
@@ -170,15 +154,11 @@ function listenerForDeleteBtn(target) {
   const icon = target
   const iconDivParent = target.parentElement
   const liElementToRemove = iconDivParent.closest('.req-list__editing-item')
-  console.log(icon)
-  console.log(iconDivParent)
-
+  
   liElementToRemove.remove()
 }
 
 function manageEditButtonAction(btn, list) {
-  console.log(btn.dataset.isEditing)
-  console.log(btn.textContent)
   
   if (btn.dataset.isEditing === 'false') {
     //~~~   enter editing state
@@ -195,7 +175,6 @@ function manageEditButtonAction(btn, list) {
         list.appendChild(createListElementEditing('', true))
 
         let currentAmountOfLis = list.children.length
-        console.log(currentAmountOfLis)
 
         list.children[currentAmountOfLis - 1].children[0].disabled = false
         list.children[currentAmountOfLis - 1].children[0].focus()
@@ -211,17 +190,9 @@ function manageEditButtonAction(btn, list) {
       })
     }
 
-    console.log(
-      'amount of elements in req list',
-      list.children.length
-    )
 
     if (list.children.length === 0) {
-      console.log('entered editing empty list');
       // add a single list item ready for enter description
-      // list.appendChild(document.createElement('li'))
-      // list.children[0].innerHTML = getListItemEditContent('', true)
-      // list.children[0].classList.add('req-list__editing-item')       
 
       list.appendChild(createListElementEditing('', true))
 
@@ -247,7 +218,6 @@ function manageEditButtonAction(btn, list) {
 
     } else {
       // get list items text content
-      console.log('get list items text content')
 
       // const reqItemsText = []
       const newReqItems = []
@@ -264,8 +234,6 @@ function manageEditButtonAction(btn, list) {
         //   newElement
         // )
       }
-      // console.log(reqItemsText);
-      console.log(newReqItems)
       //delete child elements
       let lastListElement = list.lastElementChild
       while (lastListElement) {
@@ -324,8 +292,6 @@ function manageEditButtonAction(btn, list) {
         continue
       }
     }
-    // console.log(reqItemsText);
-    console.log(newReqItems)
     //delete child elements
     let lastListElement = list.lastElementChild
     while (lastListElement) {
@@ -335,8 +301,6 @@ function manageEditButtonAction(btn, list) {
 
     list.append(...newReqItems)
 
-
-    console.log(list.children.length);
     if (list.children.length === 0) {
 
       if (btn.closest('.create-jobpost-container__form-req-list-container').previousElementSibling.textContent.includes('requirements')) {
@@ -386,16 +350,12 @@ if (createJobPostFormRoleList) {
 // add behavior for edit req list button
 if (editReqListBtn) {
   editReqListBtn.addEventListener('click', function (e) {
-    console.log(editReqListBtn.dataset.isEditing);
-
     manageEditButtonAction(editReqListBtn, createJobPostFormReqList)
   })
 }
 
 if (editRoleListBtn) {
   editRoleListBtn.addEventListener('click', function (e) {
-    console.log(editRoleListBtn.dataset.isEditing);
-
     manageEditButtonAction(editRoleListBtn, createJobPostFormRoleList)
   })
 }
@@ -406,8 +366,6 @@ createJobPostForm.addEventListener('submit', function (e) {
   e.preventDefault()
 
   if (editReqListBtn.dataset.isEditing === "true") {
-    console.log('still editing reqs, please confirm you requirements and try again');
-
     editReqListBtn.closest('.create-jobpost-container__form-req-list-container').classList.add('border-error-xs')
     createJobPostFormErrorMessage.classList.toggle('d-none')
     createJobPostFormErrorMessage.textContent = `Please confirm you requirement list and try again.`
@@ -415,8 +373,6 @@ createJobPostForm.addEventListener('submit', function (e) {
   }
 
   if (editRoleListBtn.dataset.isEditing === "true") {
-    console.log('still editing reqs, please confirm you requirements and try again');
-
     editRoleListBtn.closest('.create-jobpost-container__form-req-list-container').classList.add('border-error-xs')
     createJobPostFormErrorMessage.classList.toggle('d-none')
     createJobPostFormErrorMessage.textContent = `Please confirm you role list and try again.`
