@@ -319,7 +319,7 @@ function getListItemsTexts(listID) {
 
   texts = []
   for (let i = 0; i < list.children.length; i++) {
-    texts.push(list.children[0].textContent);
+    texts.push(list.children[i].textContent);
   }
   return texts
 }
@@ -390,7 +390,7 @@ createJobPostForm.addEventListener('submit', function (e) {
     },
     role: {
       content: createJobPostFormRoleDescription.textContent,
-      items: getListItemsTexts('createJobPostFormReqList')
+      items: getListItemsTexts('createJobPostFormRoleList')
     },
   }
 
