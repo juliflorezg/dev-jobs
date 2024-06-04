@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"net/http"
@@ -476,27 +476,29 @@ func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Requ
 
 func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
 
-	body, err := io.ReadAll(r.Body)
+	// body, err := io.ReadAll(r.Body)
 
-	if err != nil {
-		http.Error(w, "unable to read request body", http.StatusBadRequest)
-		return
-	}
-	fmt.Println()
-	fmt.Println("request body:::>", string(body))
-	fmt.Println()
-
-	// var JP JopPostFields
-
-	// err = json.NewDecoder(r.Body).Decode(&JP)
 	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	http.Error(w, "unable to read request body", http.StatusBadRequest)
 	// 	return
 	// }
+	// fmt.Println()
+	// fmt.Println("request body:::>", string(body))
+	// fmt.Println()
 
-	// fmt.Fprintf(w, "JP Fields: %+v", JP)
+	var JP JopPostFields
 
-	w.Write(body)
+	err := json.NewDecoder(r.Body).Decode(&JP)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println()
+	fmt.Printf("JP Fields: %+v\n", JP)
+	fmt.Println()
+
+	// w.Write(body)
 
 	// var form userLoginForm
 
