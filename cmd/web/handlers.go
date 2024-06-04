@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"net/http"
@@ -40,6 +41,21 @@ type userLoginForm struct {
 	Email               string `form:"email"`
 	Password            string `form:"password"`
 	validator.Validator `form:"-"`
+}
+
+type JopPostFields struct {
+	Position     string
+	Description  string
+	Contract     string
+	Location     string
+	Requirements struct {
+		Content string
+		Items   []string
+	}
+	Role struct {
+		Content string
+		Items   []string
+	}
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -460,16 +476,34 @@ func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Requ
 
 func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println()
-	fmt.Println(r.Body)
-	fmt.Println()
+	body, err := io.ReadAll(r.Body)
 
-	var form userLoginForm
-
-	err := app.decodeForm(w, r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		http.Error(w, "unable to read request body", http.StatusBadRequest)
 		return
 	}
+	fmt.Println()
+	fmt.Println("request body:::>", string(body))
+	fmt.Println()
+
+	// var JP JopPostFields
+
+	// err = json.NewDecoder(r.Body).Decode(&JP)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+
+	// fmt.Fprintf(w, "JP Fields: %+v", JP)
+
+	w.Write(body)
+
+	// var form userLoginForm
+
+	// err := app.decodeForm(w, r, &form)
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
 
 }
