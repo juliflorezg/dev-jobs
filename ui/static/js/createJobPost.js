@@ -394,12 +394,37 @@ createJobPostForm.addEventListener('submit', function (e) {
     },
   }
 
+  const fakeData = {
+    position: 'ios engineer',
+    description: "We are looking for thoughtful, well-rounded iOS engineer to join our team. We’re looking for someone to help build out the foundation of the app and infrastructure. If you are interested in taking part in building an application that millions of people use every day to increase their productivity, this is the perfect opportunity. You will play an important part in our mobile engineering practice, implementing new features, improving performance, and building beautiful user interfaces.",
+    contract: "full_time",
+    location: "New Zealand",
+    requirements: {
+      content: "You are an experienced mobile engineer looking to make Pomodoro one of the best mobile experiences out there. You are someone who excels at customer-centric product development and has a passion for working on application architecture and design, and making smooth, delightful experiences. You care deeply about quality, are energized by partnership and collaboration, and you strive to enable others around you to excel.",
+      items: ["req 1", "req 2"]
+    },
+    role: {
+      content: "You will be responsible for building infrastructure and abstractions to help us double our engineering velocity.  You will work at all layers of the stack and closely with partners across engineering, data science, research, product, and design. You will help our codebase stay ahead of the curve of the constantly evolving development ecosystem.",
+      items: ["task 1", "task 2"]
+    },
+    // secretCode: "69420lol"
+  }
+
+  const fakeDataStr = JSON.stringify(fakeData)
+  console.log(fakeDataStr);
+
 
   fetch('/account/create/jobpost', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(jobPostData)
+    // body: JSON.stringify(jobPostData)
+    body: (fakeDataStr)
   })
 })
+
+
+//"{\"position\":\"ios engineer\",\"description\":\"curl: (60) SSL certificate problem: self-signed certificate. More details here: https://curl.se/docs/sslcerts.html. curl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and how to fix it, please visit the web page mentioned above.\",\"contract\":\"full_time\",\"location\":\"New Zealand\",\"requirements\":{\"content\":\"dssa dsadfs sdf dfdsf dsf dsf dsaf \",\"items\":[\"req 1\",\"req 2\"]},\"role\":{\"content\":\"jlkjl klkj lkj lkj\",\"items\":[\"task 1\",\"task2\"]}}"
+
+//
