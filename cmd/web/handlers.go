@@ -55,6 +55,7 @@ type JopPostFields struct {
 		Content string
 		Items   []string
 	}
+	validator.Validator
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -469,43 +470,11 @@ func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Requ
 	// w.Write([]byte("render page for publish a jobpost"))
 
 	data := app.newTemplateData(r)
-	// data.Form = companySignUpForm{}
+	data.Form = JopPostFields{}
 	app.render(w, r, http.StatusOK, "createJobPost.tmpl.html", data)
 }
 
 func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
-
-	// body, err := io.ReadAll(r.Body)
-
-	// if err != nil {
-	// 	http.Error(w, "unable to read request body", http.StatusBadRequest)
-	// 	return
-	// }
-	// fmt.Println()
-	// fmt.Println("request body:::>", string(body))
-	// fmt.Println()
-
-	// var JP JopPostFields
-
-	// err := json.NewDecoder(r.Body).Decode(&JP)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-
-	// fmt.Println()
-	// fmt.Printf("JP Fields: %+v\n", JP)
-	// fmt.Println()
-
-	// w.Write(body)
-
-	// var form userLoginForm
-
-	// err := app.decodeForm(w, r, &form)
-	// if err != nil {
-	// 	app.clientError(w, http.StatusBadRequest)
-	// 	return
-	// }
 	var JP JopPostFields
 
 	err := decodeJSONBody(w, r, &JP)
@@ -522,6 +491,57 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 	fmt.Printf("JP Fields: %+v\n", JP)
 	fmt.Println()
 
-	//> after this point we have the data available in JP variable, ready to be inserted in the DB
+	//> after this point we have the data available in JP variable, we need to validate that its present
+	JP.CheckField(validator.NotBlank(JP.Position), "position", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Position, validator.LetterSpaceRegex), "position", "This field can only contain letters and spaces.")
+
+	JP.CheckField(validator.NotBlank(JP.Description), "position", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Description, validator.LetterSpacesPunctuationRegex), "description", "This field can only contain letters, spaces and punctuation (, . ' ’ \" -)")
+
+	JP.CheckField(validator.NotBlank(JP.Contract), "contract", "This field can't be blank")
+	JP.CheckField(validator.PermittedValue(JP.Contract, "Full Time", "Part Time"), "contract", "This field must be either 'Full Time' or 'Part Time'")
+
+	JP.CheckField(validator.NotBlank(JP.Location), "location", "This field can't be blank")
+
+	JP.CheckField(validator.NotBlank(JP.Requirements.Content), "requirementsContent", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Requirements.Content, validator.LetterSpacesPunctuationExtendedNumbersRegex), "requirementsContent", "This field can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+	JP.CheckField(validator.ListHasItems(JP.Requirements.Items), "requirementsItems", "Please provide at least one item for the requirements list")
+
+	for _, item := range JP.Requirements.Items {
+		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
+
+		JP.CheckField(result, "requirementsItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+		if result {
+			break
+		}
+	}
+
+	JP.CheckField(validator.NotBlank(JP.Role.Content), "roleContent", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Role.Content, validator.LetterSpacesPunctuationExtendedNumbersRegex), "roleContent", "This field can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+	JP.CheckField(validator.ListHasItems(JP.Role.Items), "roleItems", "Please provide at least one item for the list of responsibilities")
+
+	for _, item := range JP.Role.Items {
+		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
+
+		JP.CheckField(result, "roleItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+		if result {
+			break
+		}
+	}
+
+	fmt.Println()
+	fmt.Printf("JP fielderrors: %+v\n", JP.FieldErrors)
+	fmt.Println()
+
+	if !JP.Valid() {
+
+		data := app.newTemplateData(r)
+		data.Form = JP
+		app.render(w, r, http.StatusUnprocessableEntity, "createJobPost.tmpl.html", data)
+	}
+
+	//> after validation, data is ready to be inserted in the DB
 
 }
