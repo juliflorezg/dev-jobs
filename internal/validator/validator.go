@@ -19,6 +19,9 @@ type Validator struct {
 
 var EmailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 var WebsiteRegex = regexp.MustCompile("^((https?|ftp|smtp):\\/\\/)?(www.)?[a-z0-9]+\\.[a-z]+(\\/[a-zA-Z0-9#]+\\/?)*$")
+var LetterSpaceRegex = regexp.MustCompile(`^[a-zA-Z\s&]*$`)
+var LetterSpacesPunctuationRegex = regexp.MustCompile(`^[a-zA-Z\s&\-,.'’"]*$`)
+var LetterSpacesPunctuationExtendedNumbersRegex = regexp.MustCompile(`^[a-zA-Z0-9\s&\-,.'’"()/]*$`)
 
 // Valid() returns true if the FieldErrors map doesn't contain any entries.
 func (v *Validator) Valid() bool {
@@ -52,6 +55,11 @@ func (v *Validator) CheckField(ok bool, key, message string) {
 // NotBlank() returns true if a value is not an empty string
 func NotBlank(value string) bool {
 	return strings.TrimSpace(value) != ""
+}
+
+// ListHasItems() returns true if a list of values has one or more items
+func ListHasItems[T any](list []T) bool {
+	return len(list) > 0
 }
 
 // MaxChars() returns true if a value contains no more than n characters.
