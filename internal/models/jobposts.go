@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/juliflorezg/dev-jobs/internal/validator"
 )
 
 var DefaultCompanyIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M384 96V320H64L64 96H384zM64 32C28.7 32 0 60.7 0 96V320c0 35.3 28.7 64 64 64H181.3l-10.7 32H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H352c17.7 0 32-14.3 32-32s-14.3-32-32-32H277.3l-10.7-32H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm464 0c-26.5 0-48 21.5-48 48V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48H528zm16 64h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H544c-8.8 0-16-7.2-16-16s7.2-16 16-16zm-16 80c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H544c-8.8 0-16-7.2-16-16zm32 160a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" fill="#8a8eb4"/></svg>`
@@ -17,6 +19,7 @@ type JobPostModelInterface interface {
 	FilterPosts(position, location, contract string) ([]JobPost, error)
 	Get(id int) (JobPost, error)
 	InsertCompany(name, logoSVG, logoBgColor, website string) error
+	InsertJobPost(companyID int, jobPostData JopPostFields) error
 }
 
 type JobPost struct {
@@ -51,6 +54,22 @@ type JobPostModel struct {
 	DB *sql.DB
 }
 
+type JopPostFields struct {
+	Position     string
+	Description  string
+	Contract     string
+	Location     string
+	Requirements struct {
+		Content string
+		Items   []string
+	}
+	Role struct {
+		Content string
+		Items   []string
+	}
+	validator.Validator
+}
+
 func (jp *JobPostModel) Latest() ([]JobPost, error) {
 	// return nil, nil
 
@@ -62,9 +81,9 @@ func (jp *JobPostModel) Latest() ([]JobPost, error) {
 	// ORDER BY jp.posted_at LIMIT 10`
 
 	stmt := `SELECT jp.job_post_id, jp.position, jp.description, jp.contract, jp.location, jp.posted_at, cp.name, cp.logo_svg, cp.logo_bg_color
-  FROM jobposts AS jp 
-  INNER JOIN companies AS cp ON jp.company_id = cp.company_id
-  ORDER BY jp.posted_at DESC LIMIT 10`
+					FROM jobposts AS jp 
+					INNER JOIN companies AS cp ON jp.company_id = cp.company_id
+					ORDER BY jp.posted_at DESC LIMIT 10`
 
 	rows, err := jp.DB.Query(stmt)
 
@@ -191,6 +210,83 @@ func (jp *JobPostModel) Get(id int) (JobPost, error) {
 }
 
 func (jp *JobPostModel) InsertCompany(name, logoSVG, logoBgColor, website string) error {
+	return nil
+}
+
+func (jp *JobPostModel) InsertJobPost(companyUserID int, jobPostData JopPostFields) error {
+	stmt1 := `SELECT company_id FROM users_employers WHERE user_id = ?`
+	var companyID int
+
+	row := jp.DB.QueryRow(stmt1, companyUserID)
+
+	err := row.Scan(&companyID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNoRecord
+		} else {
+			return err
+		}
+	}
+
+	stmt2 := `SELECT EXISTS(SELECT true FROM companies WHERE company_id = ?)`
+	var exists bool
+
+	err = jp.DB.QueryRow(stmt2, companyID).Scan(&exists)
+	if err != nil {
+		return ErrNoCompany
+	}
+
+	stmt3 := `INSERT INTO requirements(requirements_description,
+	requirements_list) VALUES (?, ?)`
+
+	reqListJSON, err := json.Marshal(jobPostData.Requirements.Items)
+	if err != nil {
+		return ErrCouldNotConvertToJSON
+	} else {
+		fmt.Println()
+		fmt.Printf("JSON value of req list:: %s \n", reqListJSON)
+		fmt.Println()
+	}
+
+	insertedReq, err := jp.DB.Exec(stmt3, jobPostData.Requirements.Content, reqListJSON)
+	if err != nil {
+		return err
+	}
+
+	lastReqInsertedID, err := insertedReq.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	/////////////////////////////////////////////////////////////
+	stmt4 := `INSERT INTO roles(role_description,
+	role_list) VALUES (?, ?)`
+
+	roleListJSON, err := json.Marshal(jobPostData.Role.Items)
+	if err != nil {
+		return ErrCouldNotConvertToJSON
+	} else {
+		fmt.Println()
+		fmt.Printf("JSON value of role list:: %s \n", roleListJSON)
+		fmt.Println()
+	}
+
+	insertedRole, err := jp.DB.Exec(stmt4, jobPostData.Role.Content, roleListJSON)
+	if err != nil {
+		return err
+	}
+
+	lastRoleInsertedID, err := insertedRole.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	stmt5 := `INSERT INTO jobposts(position, description, contract, location, posted_at, company_id, requirements_id, role_id) VALUES(?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?)`
+
+	_, err = jp.DB.Exec(stmt5, jobPostData.Position, jobPostData.Description, jobPostData.Contract, jobPostData.Location, companyID, lastReqInsertedID, lastRoleInsertedID)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
