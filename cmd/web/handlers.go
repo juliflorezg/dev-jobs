@@ -42,21 +42,21 @@ type userLoginForm struct {
 	validator.Validator `form:"-"`
 }
 
-type JopPostFields struct {
-	Position     string
-	Description  string
-	Contract     string
-	Location     string
-	Requirements struct {
-		Content string
-		Items   []string
-	}
-	Role struct {
-		Content string
-		Items   []string
-	}
-	validator.Validator
-}
+// type JopPostFields struct {
+// 	Position     string
+// 	Description  string
+// 	Contract     string
+// 	Location     string
+// 	Requirements struct {
+// 		Content string
+// 		Items   []string
+// 	}
+// 	Role struct {
+// 		Content string
+// 		Items   []string
+// 	}
+// 	validator.Validator
+// }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte("main page, here i'll put the list of job posts"))
@@ -470,12 +470,12 @@ func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Requ
 	// w.Write([]byte("render page for publish a jobpost"))
 
 	data := app.newTemplateData(r)
-	data.Form = JopPostFields{}
+	data.Form = models.JopPostFields{}
 	app.render(w, r, http.StatusOK, "createJobPost.tmpl.html", data)
 }
 
 func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
-	var JP JopPostFields
+	var JP models.JopPostFields
 
 	err := decodeJSONBody(w, r, &JP)
 	if err != nil {
@@ -492,10 +492,11 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 	fmt.Println()
 
 	//> after this point we have the data available in JP variable, we need to validate that its present
+	// {
 	JP.CheckField(validator.NotBlank(JP.Position), "position", "This field can't be blank")
 	JP.CheckField(validator.Matches(JP.Position, validator.LetterSpaceRegex), "position", "This field can only contain letters and spaces.")
 
-	JP.CheckField(validator.NotBlank(JP.Description), "position", "This field can't be blank")
+	JP.CheckField(validator.NotBlank(JP.Description), "description", "This field can't be blank")
 	JP.CheckField(validator.Matches(JP.Description, validator.LetterSpacesPunctuationRegex), "description", "This field can only contain letters, spaces and punctuation (, . ' ’ \" -)")
 
 	JP.CheckField(validator.NotBlank(JP.Contract), "contract", "This field can't be blank")
@@ -510,8 +511,14 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 
 	for _, item := range JP.Requirements.Items {
 		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
-
 		JP.CheckField(result, "requirementsItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+		result = validator.Matches(item, validator.OnlyNumbersRegex)
+		// fmt.Println("item", item, "result::", result)
+		JP.CheckField(!result, "requirementsItems", "Items for this list cannot be only numbers.")
+
+		result = validator.Matches(item, validator.OnlyPunctuationRegex)
+		JP.CheckField(!result, "requirementsItems", "Items for this list cannot be only punctuation symbols.")
 		if result {
 			break
 		}
@@ -524,8 +531,13 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 
 	for _, item := range JP.Role.Items {
 		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
-
 		JP.CheckField(result, "roleItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+		result = validator.Matches(item, validator.OnlyNumbersRegex)
+		JP.CheckField(!result, "roleItems", "Items for this list cannot be only numbers.")
+
+		result = validator.Matches(item, validator.OnlyPunctuationRegex)
+		JP.CheckField(!result, "roleItems", "Items for this list cannot be only punctuation symbols.")
 		if result {
 			break
 		}
@@ -540,8 +552,40 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 		data := app.newTemplateData(r)
 		data.Form = JP
 		app.render(w, r, http.StatusUnprocessableEntity, "createJobPost.tmpl.html", data)
+		return
+	} else {
+		//> after validation, data is ready to be inserted in the DB
+
+		fmt.Printf("auth user id: %v\n", app.sessionManager.GetInt(r.Context(), "authenticatedUserID"))
+		fmt.Printf("user type: %v\n", app.sessionManager.GetInt(r.Context(), "userType"))
+
+	}
+	// }
+
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// {
+	//TODO I have to put the data in the DB
+	//* for that I can use the authenticatedUserID from user session, with that, query the -users_employers- table and get the -company_id- value
+	//* then, with that value, check the -companies- table to see if there is a company for that ID, if there is one, we can proceed, but if not, we must return an error
+
+	// with the data from user and the company id, I can to the following:
+	//		insert a new record on requirements table (req_description, req_list)
+	// 			get the id of that last record inserted in DB
+	//		insert a new record on roles table (role_description, role_list)
+	// 			get the id of that last record inserted in DB
+	// put all data submitted by user, along with company_id and the last two values for req_id, and role_id
+
+	// with that, it's been put on the DB and we can get it from company account page and the home page
+
+	err = app.jobPosts.InsertJobPost(userID, JP)
+	if err != nil {
+		app.serverError(w, r, err)
+	} else {
+		app.sessionManager.Put(r.Context(), "flash", "Your JobPost has been published successfully.")
+		http.Redirect(w, r, "/user/account", http.StatusSeeOther)
 	}
 
-	//> after validation, data is ready to be inserted in the DB
+	// }
 
 }
