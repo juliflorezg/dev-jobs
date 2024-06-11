@@ -423,14 +423,14 @@ function loadInitialJSForCreateJP(){
       location: "New Zealand",
       // location: "",
       requirements: {
-        content: "**You are an experienced mobile engineer looking to make Pomodoro one of the best mobile experiences out there. You are someone who excels at customer-centric product development and has a passion for working on application architecture and design, and making smooth, delightful experiences. You care deeply about quality, are energized by partnership and collaboration, and you strive to enable others around you to excel.",
+        content: "You are an experienced mobile engineer looking to make Pomodoro one of the best mobile experiences out there. You are someone who excels at customer-centric product development and has a passion for working on application architecture and design, and making smooth, delightful experiences. You care deeply about quality, are energized by partnership and collaboration, and you strive to enable others around you to excel.",
         // content: "",
-        items: ["**req 1", "req 2"]
+        items: ["req 1", "req 2"]
         // items: []
       },
       role: {
-        content: "**%You will be responsible for building infrastructure and abstractions to help us double our engineering velocity.  You will work at all layers of the stack and closely with partners across engineering, data science, research, product, and design. You will help our codebase stay ahead of the curve of the constantly evolving development ecosystem.",
-        items: ["task 1#@!", "task 2"]
+        content: "You will be responsible for building infrastructure and abstractions to help us double our engineering velocity.  You will work at all layers of the stack and closely with partners across engineering, data science, research, product, and design. You will help our codebase stay ahead of the curve of the constantly evolving development ecosystem.",
+        items: ["task 1", "task 2"]
         // items: []
       },
       // secretCode: "69420lol"
@@ -445,8 +445,8 @@ function loadInitialJSForCreateJP(){
       headers: {
         'Content-Type': 'application/json',
       },
-      // body: JSON.stringify(jobPostData)
-      body: (fakeDataStr)
+      body: JSON.stringify(jobPostData)
+      // body: (fakeDataStr)
     })
       .then(res => {
         console.log(res)
@@ -457,11 +457,14 @@ function loadInitialJSForCreateJP(){
         }
       })
       .then(html => {
-        document.documentElement.innerHTML = html
-
-        // Dispatch a custom event after replacing the HTML
-        const event = new CustomEvent('htmlContentReplaced');
-        document.dispatchEvent(event);
+        console.log(html);
+        if (html){
+          document.documentElement.innerHTML = html
+  
+          // Dispatch a custom event after replacing the HTML
+          const event = new CustomEvent('htmlContentReplaced');
+          document.dispatchEvent(event);
+        }
       })
       .catch(error => console.log(error))
   })
