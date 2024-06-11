@@ -1,4 +1,4 @@
-{{define "title"}}My Account{{end}} {{define "main"}}
+{{define "title"}}Create JobPost{{end}} {{define "main"}}
 
 <div class="create-jobpost-container">
   <h1>Create a JobPost</h1>
@@ -308,7 +308,7 @@
     <div class="create-jobpost-container__form-group pd-left-2">
       <label for="createJobPostFormRoleDescription">Role description</label>
       <textarea type="text" name="roleDescription" id="createJobPostFormRoleDescription" minlength="50" maxlength="600"
-        rows="7"></textarea>
+        rows="7">{{.Form.Role.Content}}</textarea>
       {{with .Form.FieldErrors.roleContent}}
       <label class='form-error'>{{.}}</label>
       {{end}}
