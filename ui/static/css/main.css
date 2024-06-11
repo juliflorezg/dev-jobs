@@ -143,6 +143,18 @@ main {
   background-color: var(--bg-color);
 }
 
+div.flash {
+  color: #ffffff;
+  font-weight: bold;
+  background-color: hsl(219, 29%, 14%);
+  padding: 18px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+  margin-bottom: 2rem;
+  border-radius: .75rem;
+}
+
 .base-footer-go {
   display: flex;
   flex-direction: column;
