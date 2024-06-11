@@ -19,6 +19,8 @@ type Validator struct {
 
 var EmailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 var WebsiteRegex = regexp.MustCompile("^((https?|ftp|smtp):\\/\\/)?(www.)?[a-z0-9]+\\.[a-z]+(\\/[a-zA-Z0-9#]+\\/?)*$")
+var OnlyNumbersRegex = regexp.MustCompile(`^[0-9]*$`)
+var OnlyPunctuationRegex = regexp.MustCompile(`^[\s&\-,.'’"()/!@#$%^_=+~` + "`" + `]*$`)
 var LetterSpaceRegex = regexp.MustCompile(`^[a-zA-Z\s&]*$`)
 var LetterSpacesPunctuationRegex = regexp.MustCompile(`^[a-zA-Z\s&\-,.'’"]*$`)
 var LetterSpacesPunctuationExtendedNumbersRegex = regexp.MustCompile(`^[a-zA-Z0-9\s&\-,.'’"()/]*$`)
