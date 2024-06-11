@@ -581,11 +581,9 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 	err = app.jobPosts.InsertJobPost(userID, JP)
 	if err != nil {
 		app.serverError(w, r, err)
-	} else {
-		app.sessionManager.Put(r.Context(), "flash", "Your JobPost has been published successfully.")
-		http.Redirect(w, r, "/user/account", http.StatusSeeOther)
 	}
+	app.sessionManager.Put(r.Context(), "flash", "Your JobPost has been published successfully.")
 
-	// }
+	http.Redirect(w, r, "/user/account", http.StatusSeeOther)
 
 }
