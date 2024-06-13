@@ -1,0 +1,61 @@
+{{define "title"}}Manage my JobPosts{{end}} {{define "main"}}
+
+<dialog class="modal" id="manageJobPostsModal">
+
+  <div class="modal-content delete-modal">
+    <p>Are you sure you want to delete this publication?</p>
+    <p class="t-bold">This action is irreversible</p>
+    <form class="moda-content__btns-container" id="manageJobPostsModalForm" action="/account/manageJobPosts/delete" >
+      <input type="hidden" name="jpid" id="jpIdToDelete">
+      <button class="close-modal-btn">Cancel</button>
+      <button class="action-modal-btn" type="submit">Delete</button>
+    </form>
+  </div>
+</dialog>
+
+<div class="user-account-container">
+  <h1 class="user-account-container__title">My JobPosts</h1>
+
+  <!-- user job applications / jobposts list -->
+  <div class="user-account-container__personal-info pd-bottom-4">
+
+    <div class="user-account-container__jobposts-list-container">
+      <p>amount of jobposts for this company::{{len .JobPosts}}</p>
+
+      {{range .JobPosts}}
+      <div class="jobposts-list-container__child-item">
+        <div>
+          <span class="jobposts-list-container__child-item--position">{{.Position}}</span>
+          <p>
+            <span class="jobposts-list-container__child-item--contract">Contract Type: </span>
+            <span>{{.Contract}}</span>
+          </p>
+        </div>
+        <div>
+          <p>
+            <span class="jobposts-list-container__child-item--location">Location: </span>
+            <span>{{.Location}}</span>
+          </p>
+          <p>
+            <span class="jobposts-list-container__child-item--postedat">Posted at: </span>
+            <span>{{humanDate .PostedAt}}</span>
+          </p>
+          <div class="jobposts-list-container__child-item--buttons">
+            <button>Edit</button>
+            <button class="child-item--buttons-delete" data-jpid="{{.ID}}">Delete</button>
+          </div>
+          <!-- <a href="/jobpost/view/{{.ID}}">See JobPost</a> -->
+        </div>
+      </div>
+      {{else}}
+      <div>
+        <span>You haven't published any JobPost yet.</span>
+      </div>
+      {{end}}
+
+    </div>
+
+
+  </div>
+</div>
+{{end}}
