@@ -126,6 +126,10 @@ body {
   outline: 3px solid red !important;
 }
 
+.t-bold{
+  font-weight: 700;
+}
+
 header {
   height: 20vh;
   background-image: url('/static/img/bg-pattern-header.svg');
@@ -1019,6 +1023,155 @@ label[for='location'] {
 .jobposts-list-container__child-item--postedat {
   color: var(--text-titles);
 }
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ styles for 'Manage my JobPosts page' ~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.jobposts-list-container__child-item--buttons {
+  display: flex;
+  justify-content: end;
+  gap: .75rem;
+
+}
+
+.jobposts-list-container__child-item--buttons button {
+  padding: .75rem;
+  padding-block: .5rem;
+  color: #fff;
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  border: 0 solid transparent;
+  filter: brightness(.75);
+}
+
+.jobposts-list-container__child-item--buttons button:hover {
+  filter: brightness(1);
+}
+
+
+.jobposts-list-container__child-item--buttons button:first-child {
+  background-color: var(--main-color);
+}
+
+.jobposts-list-container__child-item--buttons button:last-child {
+  background-color: crimson;
+}
+
+.modal {
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); */
+  border: 0 solid transparent;
+  border-radius: .5rem;
+  place-self: center;
+  padding: 0;
+  box-shadow: 0 0 0 100vw rgb(0 0 0 / 0.5);
+  background-color: transparent;
+}
+
+.modal-content {
+  padding: 1rem;
+}
+
+.modal[open] {
+  animation:
+    slide-down 500ms forwards,
+    fade-in 500ms forwards;
+}
+
+.modal::backdrop {
+  /* background: rgb(0 0 0 / 0.5); */
+  opacity: 0;
+}
+
+/* .modal[open]::backdrop{
+    animation: fade-in 500ms forwards
+    opacity:1 
+  } */
+
+.modal[closing] {
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  animation: fade-out 500ms forwards;
+}
+
+/* .modal[closing]::backdrop{
+    animation: fade-out 500ms forwards;
+  } */
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.moda-content__btns-container{
+  display: flex;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 2.5rem;
+}
+
+.delete-modal {
+  background-color: var(--card-color);
+  color: var(--text-titles);
+}
+
+.close-modal-btn{
+  background-color: var(--bg-color);
+  color: var(--text-titles);
+  padding: .5rem .75rem;
+  border: 1px solid var(--text-paragraph);
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+}
+
+.close-modal-btn:hover{
+ filter: brightness(.8);
+}
+
+.action-modal-btn{
+  background-color: crimson;
+  color: var(--text-titles);
+  padding: .5rem .75rem;
+  border: 0 solid transparent;
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  filter: brightness(.75);
+}
+
+.action-modal-btn:hover{
+ filter: brightness();
+}
+  
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE JOBPOST PAGE */
 .create-jobpost-container {
