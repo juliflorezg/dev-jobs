@@ -18,7 +18,7 @@ type UserModelInterface interface {
 	UserExists(email string) (bool, error)
 	GetLastUserCompanyCreated(email, name string) (int, int, error)
 	InsertCompanyUser(usrId, compId int) error
-	GetAllJobPostByCompany(compName string) ([]JobPost, error)
+	GetJobPostByCompany(compName string, limit int) ([]JobPost, error)
 	Delete(email string) error
 }
 
@@ -185,16 +185,17 @@ func (m *UserModel) Get(id int) (User, error) {
 	return user, nil
 }
 
-func (m *UserModel) GetAllJobPostByCompany(compName string) ([]JobPost, error) {
+func (m *UserModel) GetJobPostByCompany(compName string, limit int) ([]JobPost, error) {
 
 	stmtCompID := `SELECT company_id from companies WHERE name = ?`
 
-	stmt := `SELECT job_post_id, position, contract, location, posted_at FROM jobposts WHERE company_id = ?`
-
 	var compId int
 	var jobPosts []JobPost
+	var stmt string
+	var err error
+	var rows *sql.Rows
 
-	err := m.DB.QueryRow(stmtCompID, compName).Scan(&compId)
+	err = m.DB.QueryRow(stmtCompID, compName).Scan(&compId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord
@@ -203,7 +204,13 @@ func (m *UserModel) GetAllJobPostByCompany(compName string) ([]JobPost, error) {
 		}
 	}
 
-	rows, err := m.DB.Query(stmt, compId)
+	if limit == 0 {
+		stmt = `SELECT job_post_id, position, contract, location, posted_at FROM jobposts WHERE company_id = ?`
+		rows, err = m.DB.Query(stmt, compId)
+	} else {
+		stmt = `SELECT job_post_id, position, contract, location, posted_at FROM jobposts WHERE company_id = ? LIMIT ?`
+		rows, err = m.DB.Query(stmt, compId, limit)
+	}
 
 	if err != nil {
 		return nil, err
