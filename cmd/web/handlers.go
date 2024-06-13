@@ -42,6 +42,10 @@ type userLoginForm struct {
 	validator.Validator `form:"-"`
 }
 
+type deleteJobPostForm struct {
+	Jpid string
+}
+
 // type JopPostFields struct {
 // 	Position     string
 // 	Description  string
@@ -422,8 +426,6 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 
 	// Get User info
 	userId := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
-	// userType := app.sessionManager.GetInt(r.Context(), "userType")
-
 	user, err := app.users.Get(userId)
 
 	templateData := app.newTemplateData(r)
@@ -450,7 +452,7 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 	} else if user.Type == models.UserTypeCompany {
 		// jobPosts := []models.JobPost{{ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}}
 		fmt.Println("~~~~~~ get all company jobposts:::")
-		jobPosts, err := app.users.GetAllJobPostByCompany(user.Name)
+		jobPosts, err := app.users.GetJobPostByCompany(user.Name, 4)
 
 		if err != nil {
 			app.serverError(w, r, err)
@@ -585,5 +587,64 @@ func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Req
 	app.sessionManager.Put(r.Context(), "flash", "Your JobPost has been published successfully.")
 
 	http.Redirect(w, r, "/user/account", http.StatusSeeOther)
+
+}
+
+func (app *application) companyManageJobPosts(w http.ResponseWriter, r *http.Request) {
+
+	// Get User info
+	userId := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	user, err := app.users.Get(userId)
+
+	templateData := app.newTemplateData(r)
+	templateData.User = user
+
+	fmt.Println()
+	fmt.Println("user Id", userId)
+	fmt.Printf("user%+v", user)
+	fmt.Println()
+
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	// jobPosts := []models.JobPost{{ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}, {ID: 1, Position: "iOS Engineer", Contract: "Full Time", Location: "United States", PostedAt: time.Now()}}
+	fmt.Println("~~~~~~ get all company jobposts:::")
+	jobPosts, err := app.users.GetJobPostByCompany(user.Name, 0)
+
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	fmt.Println()
+	fmt.Printf("jobPosts: %+v\n", jobPosts)
+	fmt.Println()
+
+	templateData.JobPosts = jobPosts
+
+	app.render(w, r, http.StatusOK, "companyManageJobPosts.tmpl.html", templateData)
+}
+
+func (app *application) companyManageJobPostsDelete(w http.ResponseWriter, r *http.Request) {
+	var form deleteJobPostForm
+
+	err := decodeJSONBody(w, r, &form)
+	if err != nil {
+		var mjr *malformedJSONRequest
+		if errors.As(err, &mjr) {
+			http.Error(w, mjr.msg, mjr.status)
+		} else {
+			app.serverError(w, r, err)
+		}
+	}
+
+	fmt.Fprintf(w, "Job post to delete: jp with ID %q", form.Jpid)
+
+	// app.jobPosts
 
 }
