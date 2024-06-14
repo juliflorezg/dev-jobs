@@ -643,8 +643,23 @@ func (app *application) companyManageJobPostsDelete(w http.ResponseWriter, r *ht
 		}
 	}
 
-	fmt.Fprintf(w, "Job post to delete: jp with ID %q", form.Jpid)
+	jpid, err := strconv.Atoi(form.Jpid)
+	if err != nil {
+		http.Error(w, "The jpid value must be an integer", http.StatusUnprocessableEntity)
+	}
 
-	// app.jobPosts
+	fmt.Println()
+	fmt.Printf("Job post to delete: jp with ID: %v", jpid)
+	fmt.Println()
+
+	err = app.jobPosts.DeleteJobPost(jpid)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Your publication has been deleted successfully")
+
+	http.Redirect(w, r, "/account/manageJobPosts", http.StatusSeeOther)
 
 }
