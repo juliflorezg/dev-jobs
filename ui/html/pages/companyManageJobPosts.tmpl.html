@@ -4,12 +4,17 @@
 
   <div class="modal-content delete-modal">
     <p>Are you sure you want to delete this publication?</p>
+
+    <p id="modalContentJobPostPosition"></p>
     <p class="t-bold">This action is irreversible</p>
-    <form class="moda-content__btns-container" id="manageJobPostsModalForm" action="/account/manageJobPosts/delete" >
-      <input type="hidden" name="jpid" id="jpIdToDelete">
+    <div class="modal-content__btns-container">
       <button class="close-modal-btn">Cancel</button>
-      <button class="action-modal-btn" type="submit">Delete</button>
-    </form>
+
+      <form id="manageJobPostsModalForm" action="/account/manageJobPosts/delete" >
+        <input type="hidden" name="jpid" id="jpIdToDelete">
+    <button class="action-modal-btn" type="submit">Delete</button>
+  </form>
+</div>
   </div>
 </dialog>
 
@@ -42,7 +47,7 @@
           </p>
           <div class="jobposts-list-container__child-item--buttons">
             <button>Edit</button>
-            <button class="child-item--buttons-delete" data-jpid="{{.ID}}">Delete</button>
+            <button class="child-item--buttons-delete" data-jpid="{{.ID}}" data-jp-position="{{.Position}}">Delete</button>
           </div>
           <!-- <a href="/jobpost/view/{{.ID}}">See JobPost</a> -->
         </div>
