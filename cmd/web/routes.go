@@ -39,6 +39,7 @@ func (app *application) routes() http.Handler {
 
 	router.Handler(http.MethodGet, "/account/manageJobPosts", protected.ThenFunc(app.companyManageJobPosts))
 	router.Handler(http.MethodDelete, "/account/manageJobPosts/delete", protected.ThenFunc(app.companyManageJobPostsDelete))
+	router.Handler(http.MethodGet, "/account/edit/jobpost/:id", dynamic.ThenFunc(app.userEditJobPost))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
