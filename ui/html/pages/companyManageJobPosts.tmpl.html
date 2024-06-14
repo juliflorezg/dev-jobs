@@ -46,7 +46,7 @@
             <span>{{humanDate .PostedAt}}</span>
           </p>
           <div class="jobposts-list-container__child-item--buttons">
-            <button>Edit</button>
+            <button><a href="/account/edit/jobpost/{{.ID}}">Edit</a></button>
             <button class="child-item--buttons-delete" data-jpid="{{.ID}}" data-jp-position="{{.Position}}">Delete</button>
           </div>
           <!-- <a href="/jobpost/view/{{.ID}}">See JobPost</a> -->
