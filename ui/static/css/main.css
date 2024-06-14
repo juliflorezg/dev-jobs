@@ -157,6 +157,7 @@ div.flash {
   max-width: 800px;
   margin-bottom: 2rem;
   border-radius: .75rem;
+  outline: 2px solid var(--main-color);
 }
 
 .base-footer-go {
@@ -1066,7 +1067,7 @@ label[for='location'] {
   border-radius: .5rem;
   place-self: center;
   padding: 0;
-  box-shadow: 0 0 0 100vw rgb(0 0 0 / 0.5);
+  box-shadow: 0 0 0 100vw rgb(0 0 0 / 0.85);
   background-color: transparent;
 }
 
@@ -1131,7 +1132,15 @@ label[for='location'] {
   }
 }
 
-.moda-content__btns-container{
+#modalContentJobPostPosition{
+  margin-block: 1.5rem;
+  padding-block: .5rem;
+  text-align: center;
+  border-radius: .25rem;
+  border: 1px solid gray;
+}
+
+.modal-content__btns-container{
   display: flex;
   justify-content: center;
   gap: .75rem;
