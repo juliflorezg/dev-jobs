@@ -36,8 +36,8 @@
       <div class="header-access-container">
         {{if .IsAuthenticated}}
 
-        <div class="header-access-container__profile-logout-container">
-          <a href="/user/account">My account</a>
+        <div class="header-access-container__profile-btns-container">
+          <a href="/user/account" class="profile-btns-container__account-link">My account</a>
           <form action='/user/logout' method='POST'>
             <button>Logout</button>
           </form>

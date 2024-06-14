@@ -126,7 +126,7 @@ body {
   outline: 3px solid red !important;
 }
 
-.t-bold{
+.t-bold {
   font-weight: 700;
 }
 
@@ -192,10 +192,21 @@ div.flash {
   transform: translateY(-40%);
 }
 
-.logo-container,
+/* .logo-container,
 .toggle-theme-container {
   height: 115%;
+} */
+
+.logo-container {
+  height: 90px;
+
 }
+
+.toggle-theme-container {
+  height: 38px;
+}
+
+/* 91 38 */
 
 .logo-container {
   display: flex;
@@ -284,6 +295,8 @@ div.flash {
   border-radius: 0.5rem;
   border: 1px solid #fff;
   font-weight: 700;
+  transition: all .3s ease-in-out;
+  cursor: pointer;
 }
 
 .header-access-container__sign-in,
@@ -347,6 +360,34 @@ div.flash {
 .header-access-container__sign-up-users-list a:hover {
   background-color: #232a74;
   color: #fff;
+}
+
+.header-access-container__profile-btns-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-btns-container__account-link {
+  padding: 0.5rem;
+  /* padding-right: 1.5rem; */
+  background-color: #fff;
+  color: var(--main-color);
+  border-radius: 0.5rem;
+  border: 1px solid #fff;
+  font-weight: 700;
+  transition: all .3s ease-in-out;
+}
+
+.profile-btns-container__account-link:hover {
+  background-color: var(--main-color);
+  color: #fff;
+}
+
+.header-access-container__profile-btns-container button:hover {
+  background-color: #fff;
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
 }
 
 /* home */
@@ -998,15 +1039,18 @@ label[for='location'] {
 
 .jobposts-list-container__child-item>div:nth-child(2) a {
   /* gap: 1rem; */
-  margin-bottom: 1rem;
   text-decoration: none;
-  padding: .2rem;
+  padding: .25rem .4rem;
   border-radius: .3rem;
   background-color: #fff;
-  outline: 3px solid var(--main-color);
+  /* outline: 3px solid var(--main-color); */
   color: var(--main-color);
-  filter: brightness(.85);
+  filter: brightness(.9);
   transition: all 0.25s ease-in-out;
+  display: block;
+  margin: 0 auto;
+  margin-top: 1.5rem;
+  width: max-content;
 }
 
 .jobposts-list-container__child-item>div:nth-child(2) a:hover {
@@ -1132,7 +1176,7 @@ label[for='location'] {
   }
 }
 
-#modalContentJobPostPosition{
+#modalContentJobPostPosition {
   margin-block: 1.5rem;
   padding-block: .5rem;
   text-align: center;
@@ -1140,7 +1184,7 @@ label[for='location'] {
   border: 1px solid gray;
 }
 
-.modal-content__btns-container{
+.modal-content__btns-container {
   display: flex;
   justify-content: center;
   gap: .75rem;
@@ -1152,7 +1196,7 @@ label[for='location'] {
   color: var(--text-titles);
 }
 
-.close-modal-btn{
+.close-modal-btn {
   background-color: var(--bg-color);
   color: var(--text-titles);
   padding: .5rem .75rem;
@@ -1162,11 +1206,11 @@ label[for='location'] {
   transition: all .3s ease-in-out;
 }
 
-.close-modal-btn:hover{
- filter: brightness(.8);
+.close-modal-btn:hover {
+  filter: brightness(.8);
 }
 
-.action-modal-btn{
+.action-modal-btn {
   background-color: crimson;
   color: var(--text-titles);
   padding: .5rem .75rem;
@@ -1177,10 +1221,10 @@ label[for='location'] {
   filter: brightness(.75);
 }
 
-.action-modal-btn:hover{
- filter: brightness();
+.action-modal-btn:hover {
+  filter: brightness();
 }
-  
+
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE JOBPOST PAGE */
 .create-jobpost-container {
@@ -1479,6 +1523,12 @@ textarea:disabled {
     display: block;
   }
 
+  .header-access-container__profile-btns-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
   /* home filter form */
 
   .form-icon-position {
@@ -1678,6 +1728,12 @@ textarea:disabled {
     /* margin-inline: 5%; */
     margin: 0 auto;
     margin-bottom: 3rem;
+  }
+
+  .jobposts-list-container__child-item>div:nth-child(2) a {
+    margin-top: 1.5rem;
+    margin-left: auto;
+    margin-right: 0;
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE JOBPOST PAGE */

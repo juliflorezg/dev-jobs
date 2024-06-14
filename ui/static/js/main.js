@@ -92,3 +92,9 @@ if (signupFormInfoCloseIcon) {
     userSignupInfoList.classList.toggle('hidden')
   })
 }
+
+if (!document.title.includes('Home')) {
+  document.querySelector('header').style.height = '15vh'
+  document.querySelector('header .wrapper').style.height = '30%'
+  document.querySelector('header .wrapper').style.transform = 'translateY(-20%)'
+}
