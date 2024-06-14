@@ -1075,7 +1075,6 @@ label[for='location'] {
   display: flex;
   justify-content: end;
   gap: .75rem;
-
 }
 
 .jobposts-list-container__child-item--buttons button {
@@ -1087,6 +1086,21 @@ label[for='location'] {
   transition: all .2s ease-in-out;
   border: 0 solid transparent;
   filter: brightness(.75);
+}
+
+.jobposts-list-container__child-item--buttons button a{
+  /* gap: 1rem; */
+  text-decoration: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  /* outline: 3px solid var(--main-color); */
+  color: #fff !important;
+  filter: unset !important;
+  transition: initial !important;
+  display: block !important;
+  margin: 0 !important;
+  width: max-content !important;
 }
 
 .jobposts-list-container__child-item--buttons button:hover {
