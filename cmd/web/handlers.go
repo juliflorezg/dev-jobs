@@ -663,3 +663,41 @@ func (app *application) companyManageJobPostsDelete(w http.ResponseWriter, r *ht
 	http.Redirect(w, r, "/account/manageJobPosts", http.StatusSeeOther)
 
 }
+
+func (app *application) userEditJobPost(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	jobPost, err := app.jobPosts.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	fmt.Println()
+	fmt.Printf("%+v", jobPost)
+	fmt.Println()
+
+	data := app.newTemplateData(r)
+	data.Form = models.JopPostFields{}
+	fmt.Println()
+	fmt.Printf("%+v", data.Form)
+	fmt.Println()
+	data.JobPost = jobPost
+
+	app.render(w, r, 200, "editJobPost.tmpl.html", data)
+}
+
+// how to fix this error in golang
+// data.Form.Position undefined (type any has no field or method Position)
+
+// data := app.newTemplateData(r)
+// 	data.Form = models.JopPostFields{}
+// 	data.Form.Position = jobPost.Position
