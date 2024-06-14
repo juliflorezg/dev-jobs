@@ -20,6 +20,7 @@ type JobPostModelInterface interface {
 	Get(id int) (JobPost, error)
 	InsertCompany(name, logoSVG, logoBgColor, website string) error
 	InsertJobPost(companyID int, jobPostData JopPostFields) error
+	DeleteJobPost(jobPostID int) error
 }
 
 type JobPost struct {
@@ -284,6 +285,18 @@ func (jp *JobPostModel) InsertJobPost(companyUserID int, jobPostData JopPostFiel
 	stmt5 := `INSERT INTO jobposts(position, description, contract, location, posted_at, company_id, requirements_id, role_id) VALUES(?, ?, ?, ?, UTC_TIMESTAMP(), ?, ?, ?)`
 
 	_, err = jp.DB.Exec(stmt5, jobPostData.Position, jobPostData.Description, jobPostData.Contract, jobPostData.Location, companyID, lastReqInsertedID, lastRoleInsertedID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (jp *JobPostModel) DeleteJobPost(jobPostID int) error {
+
+	stmt := `DELETE FROM jobposts WHERE job_post_id = ?`
+
+	_, err := jp.DB.Exec(stmt, jobPostID)
 	if err != nil {
 		return err
 	}
