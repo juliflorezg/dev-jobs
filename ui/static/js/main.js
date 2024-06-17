@@ -94,7 +94,7 @@ if (signupFormInfoCloseIcon) {
 }
 
 if (!document.title.includes('Home')) {
-  document.querySelector('header').style.height = '15vh'
+  document.querySelector('header').style.height = '17vh'
   document.querySelector('header .wrapper').style.height = '30%'
   document.querySelector('header .wrapper').style.transform = 'translateY(-20%)'
 }
