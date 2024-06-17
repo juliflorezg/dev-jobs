@@ -19,8 +19,9 @@ type JobPostModelInterface interface {
 	FilterPosts(position, location, contract string) ([]JobPost, error)
 	Get(id int) (JobPost, error)
 	InsertCompany(name, logoSVG, logoBgColor, website string) error
-	InsertJobPost(companyID int, jobPostData JopPostFields) error
+	InsertJobPost(companyUserID int, jobPostData CreateJopPostFields) error
 	DeleteJobPost(jobPostID int) error
+	EditJobPost(jobPostData EditJopPostFields) error
 }
 
 type JobPost struct {
@@ -36,6 +37,7 @@ type JobPost struct {
 }
 
 type Company struct {
+	CompanyID   int
 	Name        string
 	LogoSVG     string
 	LogoBgColor string
@@ -43,10 +45,12 @@ type Company struct {
 }
 
 type Requirements struct {
+	ReqID                   int
 	RequirementsDescription string
 	RequirementsList        []string
 }
 type Role struct {
+	RoleID          int
 	RoleDescription string
 	RoleList        []string
 }
@@ -55,7 +59,7 @@ type JobPostModel struct {
 	DB *sql.DB
 }
 
-type JopPostFields struct {
+type CreateJopPostFields struct {
 	Position     string
 	Description  string
 	Contract     string
@@ -65,6 +69,26 @@ type JopPostFields struct {
 		Items   []string
 	}
 	Role struct {
+		Content string
+		Items   []string
+	}
+	validator.Validator
+}
+
+type EditJopPostFields struct {
+	ID           int
+	Position     string
+	Description  string
+	Contract     string
+	Location     string
+	CompanyID    int
+	Requirements struct {
+		ReqID   int
+		Content string
+		Items   []string
+	}
+	Role struct {
+		RoleID  int
 		Content string
 		Items   []string
 	}
@@ -175,7 +199,7 @@ func (jp *JobPostModel) FilterPosts(position, location, contract string) ([]JobP
 
 func (jp *JobPostModel) Get(id int) (JobPost, error) {
 
-	stmt := `SELECT jp.job_post_id, jp.position, jp.description, jp.contract, jp.location, jp.posted_at, cp.name, cp.logo_svg, cp.logo_bg_color, cp.website, rq.requirements_description, rq.requirements_list, rl.role_description, rl.role_list
+	stmt := `SELECT jp.job_post_id, jp.position, jp.description, jp.contract, jp.location, jp.posted_at, cp.company_id, cp.name, cp.logo_svg, cp.logo_bg_color, cp.website, rq.req_id, rq.requirements_description, rq.requirements_list, rl.role_id, rl.role_description, rl.role_list
 		FROM jobposts AS jp
 		INNER JOIN companies AS cp ON jp.company_id = cp.company_id
 		INNER JOIN requirements AS rq ON jp.requirements_id = rq.req_id
@@ -188,7 +212,7 @@ func (jp *JobPostModel) Get(id int) (JobPost, error) {
 	var rqList any
 	var roleList any
 
-	err := row.Scan(&jobPost.ID, &jobPost.Position, &jobPost.Description, &jobPost.Contract, &jobPost.Location, &jobPost.PostedAt, &jobPost.Company.Name, &jobPost.Company.LogoSVG, &jobPost.Company.LogoBgColor, &jobPost.Company.Website, &jobPost.Requirements.RequirementsDescription, &rqList, &jobPost.Role.RoleDescription, &roleList)
+	err := row.Scan(&jobPost.ID, &jobPost.Position, &jobPost.Description, &jobPost.Contract, &jobPost.Location, &jobPost.PostedAt, &jobPost.Company.CompanyID, &jobPost.Company.Name, &jobPost.Company.LogoSVG, &jobPost.Company.LogoBgColor, &jobPost.Company.Website, &jobPost.Requirements.ReqID, &jobPost.Requirements.RequirementsDescription, &rqList, &jobPost.Role.RoleID, &jobPost.Role.RoleDescription, &roleList)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -214,7 +238,7 @@ func (jp *JobPostModel) InsertCompany(name, logoSVG, logoBgColor, website string
 	return nil
 }
 
-func (jp *JobPostModel) InsertJobPost(companyUserID int, jobPostData JopPostFields) error {
+func (jp *JobPostModel) InsertJobPost(companyUserID int, jobPostData CreateJopPostFields) error {
 	stmt1 := `SELECT company_id FROM users_employers WHERE user_id = ?`
 	var companyID int
 
@@ -300,6 +324,98 @@ func (jp *JobPostModel) DeleteJobPost(jobPostID int) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (jp *JobPostModel) EditJobPost(jobPostData EditJopPostFields) error {
+
+	stmt := `UPDATE jobposts
+		SET position = ?, description = ?, contract = ?, location = ?
+		WHERE job_post_id = ?
+		`
+	result, err := jp.DB.Exec(stmt, jobPostData.Position, jobPostData.Description, jobPostData.Contract, jobPostData.Location, jobPostData.ID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNoRecord
+		} else {
+			return err
+		}
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	fmt.Println()
+	fmt.Printf("rows affected for jp: %v", rows)
+	fmt.Println()
+
+	stmt2 := `UPDATE requirements
+		SET requirements_description = ?, requirements_list = ?
+		WHERE req_id = ?`
+
+	reqListJSON, err := json.Marshal(jobPostData.Requirements.Items)
+	if err != nil {
+		fmt.Println("err", err.Error())
+		return ErrCouldNotConvertToJSON
+	} else {
+		fmt.Println()
+		fmt.Printf("JSON value of req list:: %s \n", reqListJSON)
+		fmt.Println()
+	}
+
+	result, err = jp.DB.Exec(stmt2, jobPostData.Requirements.Content, reqListJSON, jobPostData.Requirements.ReqID)
+	if err != nil {
+		fmt.Println("err reqs", err.Error())
+		fmt.Println("err", err.Error())
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNoRecord
+		} else {
+			return err
+		}
+	}
+	rows, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("err", err.Error())
+		return err
+	}
+	fmt.Println()
+	fmt.Printf("rows affected for req: %v", rows)
+	fmt.Println()
+
+	stmt3 := `UPDATE roles
+	SET role_description = ?, role_list = ?
+	WHERE role_id = ?`
+
+	roleListJSON, err := json.Marshal(jobPostData.Role.Items)
+	if err != nil {
+		fmt.Println("err", err.Error())
+		return ErrCouldNotConvertToJSON
+	} else {
+		fmt.Println()
+		fmt.Printf("JSON value of role list:: %s \n", roleListJSON)
+		fmt.Println()
+	}
+
+	result, err = jp.DB.Exec(stmt3, jobPostData.Role.Content, roleListJSON, jobPostData.Role.RoleID)
+	if err != nil {
+		fmt.Println("err", err.Error())
+		// fmt.Println("err", err.Error())
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNoRecord
+		} else {
+			return err
+		}
+	}
+	rows, err = result.RowsAffected()
+	if err != nil {
+		fmt.Println("err", err.Error())
+		return err
+	}
+	fmt.Println()
+	fmt.Printf("rows affected for role: %v", rows)
+	fmt.Println()
 
 	return nil
 }
