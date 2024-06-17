@@ -2,11 +2,19 @@
 
 <div class="create-jobpost-container">
   <h1>Edit a JobPost</h1>
-  <form action="/account/edit/jobpost" class="create-jobpost-container__form" id="createJobPostForm">
+  <p>jpid{{.JobPost.ID}}</p>
+  <p>company: {{.JobPost.Company.Name}}, company_id: {{.JobPost.Company.CompanyID}}</p>
+  <p>req_id: {{.JobPost.Requirements.ReqID}}</p>
+  <p>role_id: {{.JobPost.Role.RoleID}}</p>
+  <form action="/account/edit/jobpost/{{.JobPost.ID}}" class="create-jobpost-container__form" id="createJobPostForm">
+    <input type="hidden" id="createJobPostFormJobPostID" value="{{.JobPost.ID}}">
+    <input type="hidden" id="createJobPostFormJobPostCompanyID" value="{{.JobPost.Company.CompanyID}}">
+    <input type="hidden" id="createJobPostFormJobPostReqID" value="{{.JobPost.Requirements.ReqID}}">
+    <input type="hidden" id="createJobPostFormJobPostRoleID" value="{{.JobPost.Role.RoleID}}">
     <div class="create-jobpost-container__form-group">
       <label for="createJobpostFormPosition">Position</label>
       
-      <input type="text" name="position" id="createJobpostFormPosition" value="{{or .JobPost.Position .Form.Position}}" maxlength="30">
+      <input type="text" name="position" id="createJobpostFormPosition" value="{{or .Form.Position .JobPost.Position }}" maxlength="30">
       {{with .Form.FieldErrors.position}}
       <label class='form-error'>{{.}}</label>
       {{end}}
@@ -14,7 +22,7 @@
     <div class="create-jobpost-container__form-group">
       <label for="createJobpostFormDescription">Description</label>
       <textarea type="text" name="description" id="createJobPostFormDescription" minlength="50" maxlength="600"
-        rows="7">{{or .JobPost.Description .Form.Description}}</textarea>
+        rows="7">{{or .Form.Description .JobPost.Description}}</textarea>
       {{with .Form.FieldErrors.description}}
       <label class='form-error'>{{.}}</label>
       {{end}}
@@ -280,7 +288,7 @@
     <div class="create-jobpost-container__form-group pd-left-2">
       <label for="createJobpostFormReqDescription">Requirements description</label>
       <textarea type="text" name="requirementsDescription" id="createJobPostFormReqDescription" minlength="50"
-        maxlength="600" rows="7">{{or .JobPost.Requirements.RequirementsDescription .Form.Requirements.Content}}</textarea>
+        maxlength="600" rows="7">{{or .Form.Requirements.Content .JobPost.Requirements.RequirementsDescription}}</textarea>
       {{with .Form.FieldErrors.requirementsContent}}
       <label class='form-error'>{{.}}</label>
       {{end}}
@@ -288,7 +296,7 @@
     <p class="pd-left-2">List of requirements</p>
     <div class="create-jobpost-container__form-req-list-container m-left-2 m-bottom-2">
       <ul id="createJobPostFormReqList">
-        {{ range  (or .JobPost.Requirements.RequirementsList .Form.Requirements.Items)}}
+        {{ range  (or .Form.Requirements.Items .JobPost.Requirements.RequirementsList)}}
         <li>{{.}}</li>
         {{end}}
         <!-- <li>5-7 years of experience in infrastructure engineering of applications</li>
@@ -309,7 +317,7 @@
     <div class="create-jobpost-container__form-group pd-left-2">
       <label for="createJobPostFormRoleDescription">Role description</label>
       <textarea type="text" name="roleDescription" id="createJobPostFormRoleDescription" minlength="50" maxlength="600"
-        rows="7">{{or .JobPost.Role.RoleDescription .Form.Role.Content}}</textarea>
+        rows="7">{{or .Form.Role.Content .JobPost.Role.RoleDescription}}</textarea>
       {{with .Form.FieldErrors.roleContent}}
       <label class='form-error'>{{.}}</label>
       {{end}}
@@ -322,7 +330,7 @@
                 <li>Experience working within a modern Javascript workflow through technologies such as: GitHub, CSS Preprocessors,Styled Components, Single Page Application frameworks and Module Bundlers (Webpack etc.)</li>
                 <li>Experience in implementing A/B Tests</li>
                 <li>Hands on experience with React/Redux in a production application</li> -->
-        {{ range (or .JobPost.Role.RoleList .Form.Role.Items)}}
+        {{ range (or .Form.Role.Items .JobPost.Role.RoleList)}}
         <li>{{.}}</li>
         {{end}}
       </ol>
