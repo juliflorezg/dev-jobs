@@ -472,12 +472,12 @@ func (app *application) userCreateJobPostGet(w http.ResponseWriter, r *http.Requ
 	// w.Write([]byte("render page for publish a jobpost"))
 
 	data := app.newTemplateData(r)
-	data.Form = models.JopPostFields{}
+	data.Form = models.CreateJopPostFields{}
 	app.render(w, r, http.StatusOK, "createJobPost.tmpl.html", data)
 }
 
 func (app *application) userCreateJobPostPost(w http.ResponseWriter, r *http.Request) {
-	var JP models.JopPostFields
+	var JP models.CreateJopPostFields
 
 	err := decodeJSONBody(w, r, &JP)
 	if err != nil {
@@ -681,12 +681,13 @@ func (app *application) userEditJobPost(w http.ResponseWriter, r *http.Request) 
 		}
 		return
 	}
+
 	fmt.Println()
 	fmt.Printf("%+v", jobPost)
 	fmt.Println()
 
 	data := app.newTemplateData(r)
-	data.Form = models.JopPostFields{}
+	data.Form = models.CreateJopPostFields{}
 	fmt.Println()
 	fmt.Printf("%+v", data.Form)
 	fmt.Println()
@@ -695,9 +696,137 @@ func (app *application) userEditJobPost(w http.ResponseWriter, r *http.Request) 
 	app.render(w, r, 200, "editJobPost.tmpl.html", data)
 }
 
-// how to fix this error in golang
-// data.Form.Position undefined (type any has no field or method Position)
+func (app *application) userEditJobPostPost(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
 
-// data := app.newTemplateData(r)
-// 	data.Form = models.JopPostFields{}
-// 	data.Form.Position = jobPost.Position
+	var JP models.EditJopPostFields
+
+	err = decodeJSONBody(w, r, &JP)
+	if err != nil {
+		var mjr *malformedJSONRequest
+		if errors.As(err, &mjr) {
+			http.Error(w, mjr.msg, mjr.status)
+		} else {
+			app.serverError(w, r, err)
+		}
+	}
+
+	fmt.Println()
+	fmt.Printf("JP Fields: %+v\n", JP)
+	fmt.Println()
+
+	//> after this point we have the data available in JP variable, we need to validate that its present
+	// {
+	JP.CheckField(validator.NotBlank(JP.Position), "position", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Position, validator.LetterSpaceRegex), "position", "This field can only contain letters and spaces.")
+
+	JP.CheckField(validator.NotBlank(JP.Description), "description", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Description, validator.LetterSpacesPunctuationRegex), "description", "This field can only contain letters, spaces and punctuation (, . ' ’ \" -)")
+
+	JP.CheckField(validator.NotBlank(JP.Contract), "contract", "This field can't be blank")
+	JP.CheckField(validator.PermittedValue(JP.Contract, "Full Time", "Part Time"), "contract", "This field must be either 'Full Time' or 'Part Time'")
+
+	JP.CheckField(validator.NotBlank(JP.Location), "location", "This field can't be blank")
+
+	JP.CheckField(validator.NotBlank(JP.Requirements.Content), "requirementsContent", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Requirements.Content, validator.LetterSpacesPunctuationExtendedNumbersRegex), "requirementsContent", "This field can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+	JP.CheckField(validator.ListHasItems(JP.Requirements.Items), "requirementsItems", "Please provide at least one item for the requirements list")
+
+	for _, item := range JP.Requirements.Items {
+		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
+		JP.CheckField(result, "requirementsItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+		result = validator.Matches(item, validator.OnlyNumbersRegex)
+		// fmt.Println("item", item, "result::", result)
+		JP.CheckField(!result, "requirementsItems", "Items for this list cannot be only numbers.")
+
+		result = validator.Matches(item, validator.OnlyPunctuationRegex)
+		JP.CheckField(!result, "requirementsItems", "Items for this list cannot be only punctuation symbols.")
+		if result {
+			break
+		}
+	}
+
+	JP.CheckField(validator.NotBlank(JP.Role.Content), "roleContent", "This field can't be blank")
+	JP.CheckField(validator.Matches(JP.Role.Content, validator.LetterSpacesPunctuationExtendedNumbersRegex), "roleContent", "This field can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+	JP.CheckField(validator.ListHasItems(JP.Role.Items), "roleItems", "Please provide at least one item for the list of responsibilities")
+
+	for _, item := range JP.Role.Items {
+		result := validator.Matches(item, validator.LetterSpacesPunctuationExtendedNumbersRegex)
+		JP.CheckField(result, "roleItems", "Items for this list can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+		result = validator.Matches(item, validator.OnlyNumbersRegex)
+		JP.CheckField(!result, "roleItems", "Items for this list cannot be only numbers.")
+
+		result = validator.Matches(item, validator.OnlyPunctuationRegex)
+		JP.CheckField(!result, "roleItems", "Items for this list cannot be only punctuation symbols.")
+		if result {
+			break
+		}
+	}
+
+	fmt.Println()
+	fmt.Printf("JP fielderrors: %+v\n", JP.FieldErrors)
+	fmt.Println()
+
+	if !JP.Valid() {
+
+		jobPost, err := app.jobPosts.Get(id)
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.notFound(w)
+			} else {
+				app.serverError(w, r, err)
+			}
+			return
+		}
+
+		data := app.newTemplateData(r)
+		data.Form = JP
+		data.JobPost = jobPost
+
+		// ?????????????????????????????????????????????????????????????????????????????????????????????
+		// TODO: get the info for the JobPost field in data
+		app.render(w, r, http.StatusUnprocessableEntity, "editJobPost.tmpl.html", data)
+		return
+	}
+	//> after validation, data is ready to be inserted in the DB
+
+	fmt.Printf("auth user id: %v\n", app.sessionManager.GetInt(r.Context(), "authenticatedUserID"))
+	fmt.Printf("user type: %v\n", app.sessionManager.GetInt(r.Context(), "userType"))
+	// }
+
+	// userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// {
+	//TODO I have to put the data in the DB
+	//* for that I can use the authenticatedUserID from user session, with that, query the -users_employers- table and get the -company_id- value
+	//* then, with that value, check the -companies- table to see if there is a company for that ID, if there is one, we can proceed, but if not, we must return an error
+
+	// with the data from user and the company id, I can to the following:
+	//		insert a new record on requirements table (req_description, req_list)
+	// 			get the id of that last record inserted in DB
+	//		insert a new record on roles table (role_description, role_list)
+	// 			get the id of that last record inserted in DB
+	// put all data submitted by user, along with company_id and the last two values for req_id, and role_id
+
+	// with that, it's been put on the DB and we can get it from company account page and the home page
+
+	// err = app.jobPosts.InsertJobPost(userID, JP)
+	//??? err = app.jobPosts.EditJobPost(JP.ID, JP.CompanyID, JP.Requirements.ReqID, JP.Role.RoleID, JP)
+	err = app.jobPosts.EditJobPost(JP)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+	app.sessionManager.Put(r.Context(), "flash", "Your JobPost has been updated successfully.")
+
+	http.Redirect(w, r, "/user/account", http.StatusSeeOther)
+
+}
