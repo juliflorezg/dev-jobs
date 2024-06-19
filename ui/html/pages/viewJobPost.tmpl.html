@@ -1,65 +1,89 @@
-{{define "title"}} {{printf "%s at %s" .JobPost.Position
-.JobPost.Company.Name}}{{end}} {{define "main"}} {{with .JobPost}}
-<section class="jobpost-view-header">
-  <div
-    class="jobpost-view-header__company-logo-container"
-    style="background-color: {{ .Company.LogoBgColor}};"
-  >
-    {{.Company.LogoSVG}}
-  </div>
-  <div class="jobpost-view-header__info-container">
-    <div class="jobpost-view-header__info-container-text">
-      <p>{{.Company.Name}}</p>
-      <span>{{.Company.Website}}</span>
-    </div>
-    <div class="jobpost-view-header__info-container-button">
-      <a href="{{.Company.Website}}">Company Site</a>
-    </div>
-  </div>
-</section>
+{{define "title"}} 
+  {{printf "%s at %s" .JobPost.Position .JobPost.Company.Name}}
+{{end}} 
 
-<section class="jobpost-view-content">
-  <div class="jobpost-view-content__header">
-    <div class="jobpost-view-content__header-text">
-      <div class="jobpost-view-content__header-text-info">
-        <span>{{humanDate .PostedAt}}</span>
-        <span class="jobpost-info__separator"></span
-        ><span class="">{{.Contract}}</span>
+{{define "main"}} 
+    <section class="jobpost-view-header">
+      <div
+        class="jobpost-view-header__company-logo-container"
+        style="background-color: {{ .JobPost.Company.LogoBgColor}};"
+      >
+        {{.JobPost.Company.LogoSVG}}
       </div>
-      <h1 class="jobpost-view-content__header-title">{{.Position}}</h1>
-      <span class="jobpost-view-content__header-location">{{.Location}}</span>
-    </div>
-    <div class="jobpost-view-content__header-apply-link">
-      <a href="">Apply Now</a>
-    </div>
-  </div>
-  <p class="jobpost-view-content__description">{{.Description}}</p>
-  <h2 class="jobpost-view-content__req-title">Requirements</h2>
-  <p>{{.Requirements.RequirementsDescription}}</p>
-  <ul class="jobpost-view-content__req-list">
-    {{range .Requirements.RequirementsList}}
-    <li>{{ . }}</li>
-    {{end}}
-  </ul>
-  <h2 class="jobpost-view-content__role-title">What You Will Do</h2>
-  <p>{{.Role.RoleDescription}}</p>
-  <ol class="jobpost-view-content__role-list">
-    {{range .Role.RoleList}}
-    <li>{{ . }}</li>
-    {{end}}
-  </ol>
-  <!-- <span>{{ len .Requirements.RequirementsList }}</span> -->
-</section>
-<section class="jobpost-view-footer">
-  <div class="jobpost-view-footer-container">
-    <div class="jobpost-view-footer-container__text">
-      <span class="jobpost-view-footer-container__text-position">{{ .Position }}</span>
-      <span>{{ .Company.Name }}</span>
-    </div>
-    <div class="jobpost-view-footer__apply-link">
-      <a href="">Apply Now</a>
-    </div>
-  </div>
-</section>
+      <div class="jobpost-view-header__info-container">
+        <div class="jobpost-view-header__info-container-text">
+          <p>{{.JobPost.Company.Name}}</p>
+          <span>{{.JobPost.Company.Website}}</span>
+        </div>
+        <div class="jobpost-view-header__info-container-button">
+          <a href="{{.JobPost.Company.Website}}">Company Site</a>
+        </div>
+      </div>
+    </section>
 
-{{end}} {{end}}
+    <section class="jobpost-view-content">
+      <div class="jobpost-view-content__header">
+        <div class="jobpost-view-content__header-text">
+          <div class="jobpost-view-content__header-text-info">
+            <span>{{humanDate .JobPost.PostedAt}}</span>
+            <span class="jobpost-info__separator"></span
+            ><span class="">{{.JobPost.Contract}}</span>
+          </div>
+          <h1 class="jobpost-view-content__header-title">{{.JobPost.Position}}</h1>
+          <span class="jobpost-view-content__header-location">{{.JobPost.Location}}</span>
+        </div>
+        <div class="jobpost-view-content__header-apply-link">
+          {{if and .IsAuthenticated (eq .UserType 1)}}
+          <a href="/jobpost/apply/{{.JobPost.ID}}">Apply Now</a>
+          {{end}}
+          {{if and .IsAuthenticated (eq .UserType 2)}}
+          <p class="jobpost-view-content__header-apply-link--no-authenticated">Apply Now</p>
+          {{end}}
+          {{if not .IsAuthenticated}}
+          <p class="jobpost-view-content__header-apply-link--no-authenticated">Apply Now</p>
+          {{end}}
+          <!-- <a href="">Apply Now</a> -->
+        </div>
+      </div>
+      <p class="jobpost-view-content__description">{{.JobPost.Description}}</p>
+      <h2 class="jobpost-view-content__req-title">Requirements</h2>
+      <p>{{.JobPost.Requirements.RequirementsDescription}}</p>
+      <ul class="jobpost-view-content__req-list">
+        {{range .JobPost.Requirements.RequirementsList}}
+          <li>{{ . }}</li>
+        {{end}}
+      </ul>
+      <h2 class="jobpost-view-content__role-title">What You Will Do</h2>
+      <p>{{.JobPost.Role.RoleDescription}}</p>
+      <ol class="jobpost-view-content__role-list">
+        {{range .JobPost.Role.RoleList}}
+          <li>{{ . }}</li>
+        {{end}}
+      </ol>
+      <!-- <span>{{ len .JobPost.Requirements.RequirementsList }}</span> -->
+    </section>
+    <section class="jobpost-view-footer">
+      <div class="jobpost-view-footer-container">
+        <div class="jobpost-view-footer-container__text">
+          <span class="jobpost-view-footer-container__text-position">{{ .JobPost.Position }}</span>
+          <span>{{ .JobPost.Company.Name }}</span>
+        </div>
+        <div class="jobpost-view-footer__apply-link">
+          {{if and .IsAuthenticated (eq .UserType 1)}}
+            <a href="/jobpost/apply/{{.JobPost.ID}}">Apply Now</a>
+          {{end}}
+          {{if and .IsAuthenticated (eq .UserType 2)}}
+            <p class="jobpost-view-footer__apply-link--no-authenticated">Apply Now</p>
+          {{end}}
+          {{if not .IsAuthenticated}}
+            <p class="jobpost-view-footer__apply-link--no-authenticated">Apply Now</p>
+          {{end}}
+        </div>
+      </div>
+    </section>
+  <p>user is authenticated?? :: {{.IsAuthenticated}}</p>
+  <p>user type?? :: {{.UserType}}</p>
+  {{if and .IsAuthenticated (eq .UserType 1)}}
+    <p>user professional authenticated</p> 
+  {{end}}
+{{end}}
