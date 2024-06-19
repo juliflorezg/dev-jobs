@@ -1,0 +1,30 @@
+{{define "title"}}
+{{printf "Apply to %s at %s" .JobPost.Position .JobPost.Company.Name}}
+{{end}}
+
+{{define "main"}}
+  <form action="/jobpost/apply/{{.JobPost.ID}}" method="POST" novalidate class="apply-jobpost-form" id="companySignUpForm"
+    enctype="multipart/form-data">
+    <h1>{{printf "Apply to `%s` at `%s`" .JobPost.Position .JobPost.Company.Name}}</h1>
+    <h2>{{.JobPost.ID}}</h2>
+
+    <div class="apply-jobpost-form__container">
+      <label for="applyCV"><span>*</span>CV</label>
+      {{with .Form.FieldErrors.cv}}
+      <label class="error">{{.}}</label>
+      {{end}}
+      <input type="file" name="cv" id="applyCV" accept=".pdf"/>
+    </div>
+    
+    <div class="apply-jobpost-form__container">
+      <label for="applyCoverLetter">Cover Letter</label>
+      {{with .Form.FieldErrors.coverLetter}}
+      <label class="error">{{.}}</label>
+      {{end}}
+      <textarea name="coverletter" id="applyCoverLetter" maxlength="600" rows="15" cols="100">{{.Form.CoverLetter}}</textarea>
+    </div>
+    <div class="apply-jobpost-form__submit-container">
+      <input type="submit" value="Send my application">
+    </div>
+  </form>
+{{end}}
