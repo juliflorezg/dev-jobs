@@ -84,6 +84,9 @@
     {{with .Flash}}
       <div class="flash">{{.}}</div>
     {{end}}
+    {{with .ErrorMessage}}
+      <div class="flash-error">{{.}}</div>
+    {{end}}
     {{template "main" .}}
   </main>
   <footer class="base-footer-go">
