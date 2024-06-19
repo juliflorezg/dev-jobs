@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"os"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -84,6 +85,7 @@ func (app *application) newTemplateData(r *http.Request) templateData {
 	return templateData{
 		CurrentYear:     time.Now().Year(),
 		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
+		ErrorMessage:    app.sessionManager.PopString(r.Context(), "errorMessage"),
 		IsAuthenticated: app.isAuthenticated(r),
 		UserType:        app.getUserType(r),
 	}
@@ -101,7 +103,7 @@ func (app *application) decodeForm(w http.ResponseWriter, r *http.Request, dst a
 	// Call Decode() on our decoder instance, passing the target destination as
 	// the first parameter
 
-	fmt.Println("in decodeForm fn, helpers.go")
+	fmt.Println("in helpers file, decodeForm fn")
 	fmt.Printf("+%v\n", r.Form)
 	fmt.Printf("+%v\n", r.PostForm)
 	fmt.Println("in helpers file, decodeForm fn (end)")
@@ -131,7 +133,7 @@ func (app *application) decodeForm(w http.ResponseWriter, r *http.Request, dst a
 	return nil
 }
 
-func processFile(r *http.Request) (string, error) {
+func processSVGFile(r *http.Request) (string, error) {
 	var s string
 	f, h, err := r.FormFile("svgicon")
 	if err != nil {
@@ -151,6 +153,41 @@ func processFile(r *http.Request) (string, error) {
 	s = string(bs)
 
 	return s, nil
+}
+
+func processPDFFile(r *http.Request, fieldName, name string) (path, fileName string, err error) {
+
+	r.ParseMultipartForm(5 << 20) // max 5mb
+
+	// Retrieve the file from form data
+	// file, handler, err := r.FormFile(fieldName)
+	file, handler, err := r.FormFile("cv")
+	if err != nil {
+		return "", "", err
+	}
+	defer file.Close()
+
+	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+	fmt.Printf("File Size: %+v\n", handler.Size)
+	fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+	// Create a temporary file on the server
+	fName := strings.ReplaceAll(handler.Filename, "-", "_")
+	filePattern := strings.ReplaceAll(name, " ", "_") + "-" + fieldName + "-" + strings.ReplaceAll(strings.ReplaceAll(fName, " ", "_"), ".pdf", "") + "-*.pdf"
+	tempFile, err := os.CreateTemp("", filePattern)
+	if err != nil {
+		return "", "", err
+	}
+	defer tempFile.Close()
+
+	// Copy the uploaded file's content to the temporary file
+	_, err = io.Copy(tempFile, file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return "", "", err
+	}
+
+	return tempFile.Name(), strings.ReplaceAll(tempFile.Name(), "/tmp/", ""), nil
 }
 
 func getSearchResultMessage(position, location, contract string) []string {
