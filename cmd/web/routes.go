@@ -42,6 +42,9 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/account/edit/jobpost/:id", protected.ThenFunc(app.userEditJobPost))
 	router.Handler(http.MethodPost, "/account/edit/jobpost/:id", protected.ThenFunc(app.userEditJobPostPost))
 
+	router.Handler(http.MethodGet, "/jobpost/apply/:id", protected.ThenFunc(app.applyJobPostGet))
+	router.Handler(http.MethodPost, "/jobpost/apply/:id", protected.ThenFunc(app.applyJobPostPost))
+
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
 	return standard.Then(router)
