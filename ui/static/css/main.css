@@ -160,6 +160,31 @@ div.flash {
   outline: 2px solid var(--main-color);
 }
 
+div.flash-error {
+  color: crimson;
+  font-weight: bold;
+  background-color: hsl(219, 29%, 14%);
+  padding: 18px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+  margin-bottom: 2rem;
+  border-radius: .75rem;
+  outline: 2px solid crimson;
+}
+div.flash {
+  color: #ffffff;
+  font-weight: bold;
+  background-color: hsl(219, 29%, 14%);
+  padding: 18px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+  margin-bottom: 2rem;
+  border-radius: .75rem;
+  outline: 2px solid var(--main-color);
+}
+
 .base-footer-go {
   display: flex;
   flex-direction: column;
@@ -645,7 +670,7 @@ label[for='location'] {
   margin-bottom: 1.5rem;
   padding-top: 3rem;
   padding-bottom: 1.75rem;
-  background-color: #fff;
+  background-color: var(--card-color);
   border-radius: 0.75rem;
 }
 
@@ -752,6 +777,17 @@ label[for='location'] {
   border-radius: 0.5rem;
 }
 
+.jobpost-view-content__header-apply-link--no-authenticated {
+  padding-block: 0.75rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-align: center;
+  background-color: #555;
+  color: #ddd;
+  border-radius: 0.5rem;
+  cursor: not-allowed;
+}
+
 .jobpost-view-content__description {
   margin-bottom: 2rem;
   color: var(--text-paragraph);
@@ -793,6 +829,7 @@ label[for='location'] {
   background-color: var(--card-color);
   padding-inline: 5%;
   padding-block: 2rem;
+  padding-block-end: 3rem;
 }
 
 /* .jobpost-view-footer-container{} */
@@ -805,6 +842,7 @@ label[for='location'] {
 .jobpost-view-footer__apply-link a {
   display: block;
   padding-block: 1rem;
+  padding-inline: .75rem;
   background-color: #5964e0;
   color: #fff;
   font-weight: 700;
@@ -812,6 +850,35 @@ label[for='location'] {
   text-align: center;
   border-radius: 0.5rem;
 }
+
+.jobpost-view-footer__apply-link--no-authenticated {
+  position: relative;
+  display: block;
+  padding-block: 1rem;
+  padding-inline: .75rem;
+  background-color: #555;
+  color: #ddd;
+  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  cursor: not-allowed;
+}
+
+.jobpost-view-footer__apply-link--no-authenticated::after{
+  content: "You have to sign in with a 'professional' account to apply.";
+  position: absolute;
+  bottom: -50%;
+  left: 0%;
+  color: #fff;
+  font-weight: 400;
+  font-size: 1rem;
+  width: 100%;
+}
+
+
 
 /* user Sign Up Form*/
 
@@ -845,7 +912,7 @@ label[for='location'] {
   color: var(--text-titles);
 }
 
-.user-signup-form__container button[type='submit'] {
+.user-signup-form__container input[type='submit'] {
   margin-top: 2.5rem;
   padding-block: 0.75rem;
   background-color: #5964e0;
@@ -1381,7 +1448,7 @@ label[for='location'] {
   /* transform: translateX(-50%); */
   margin: 0 auto;
   margin-top: 1rem;
-
+  
 }
 
 .form-req-list-container__list-buttons button {
@@ -1473,6 +1540,82 @@ textarea:disabled {
   cursor: not-allowed;
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ APPLY TO JOBPOST PAGE */
+
+.apply-jobpost-form {
+  padding-inline: 5%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.apply-jobpost-form h1{
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--main-color);
+  margin-bottom: 2.5rem;
+}
+
+.apply-jobpost-form__container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+.apply-jobpost-form__container label{
+  display: flex;
+  /* justify-content: space-between; */
+  gap: .5rem;
+  color: var(--main-color);
+  font-weight: 700;
+}
+.apply-jobpost-form__container label span{
+  color: crimson;
+}
+
+.apply-jobpost-form__container input, textarea{
+  padding: 0.75rem 1rem;
+  border: 1px solid #6e8098;
+  border-radius: 0.5rem;
+  background-color: var(--card-color);
+  color: var(--text-titles);
+}
+
+.apply-jobpost-form__container textarea{
+  resize: none;
+}
+
+.apply-jobpost-form__submit-container{
+  display: flex;
+  justify-content: center;
+  padding-block: 1rem;
+}
+
+.apply-jobpost-form__submit-container input[type="submit"]{
+  /* margin-top: 2.5rem; */
+  padding-block: 0.75rem;
+  padding-inline: .5rem;
+  background-color: #5964e0;
+  color: #fff;
+  font-weight: 700;
+  transition: all ease-in-out 0.2s;
+  border: 0 none transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  filter: brightness(.8);
+}
+
+.apply-jobpost-form__submit-container input[type="submit"]:hover{
+  filter: brightness(1);
+}
+
+.apply-jobpost-form__container .error {
+  color: crimson;
+}
+.apply-jobpost-form__container .error + input,
+.apply-jobpost-form__container .error + textarea {
+  border: 2px solid crimson;
+}
+
 
 @media screen and (min-width: 580px) {
   .jobposts-list-container__child-item {
@@ -1482,7 +1625,7 @@ textarea:disabled {
     padding: .75rem;
     border-radius: .75rem;
   }
-
+  
   .jobposts-list-container__child-item>div:nth-child(1) {
     display: flex;
     flex-direction: column;
@@ -1720,6 +1863,19 @@ textarea:disabled {
     padding-inline: 1.75rem;
   }
 
+
+  .jobpost-view-footer__apply-link--no-authenticated::after{
+  content: "You have to sign in with a 'professional' account to apply.";
+  position: absolute;
+  bottom: 0%;
+  left: -150%;
+  color: #fff;
+  /* border: 1px solid white; */
+  font-weight: 400;
+  font-size: 1rem;
+  width: 150%;
+}
+
   /* user signup page */
   .user-signup-form {
     max-width: 1080px;
@@ -1779,6 +1935,22 @@ textarea:disabled {
   .user-signup-form__flex {
     flex-direction: row;
   }
+
+  .jobpost-view-footer__apply-link--no-authenticated::after{
+    content: "";
+  }
+  .jobpost-view-footer__apply-link--no-authenticated:hover::after{
+  content: "You have to sign in with a 'professional' account to apply";
+  position: absolute;
+  bottom: 0%;
+  left: -170%;
+  color: #fff;
+  font-weight: 400;
+  font-size: 1rem;
+  width: 150%;
+  height: 100%;
+  /* border: 1px solid #aaa; */
+}
 }
 
 @media screen and (min-width: 1440px) {
