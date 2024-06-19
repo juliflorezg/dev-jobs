@@ -10,4 +10,5 @@ var (
 	ErrDuplicateCompanyWebsite = errors.New("models: duplicate company website")
 	ErrNoCompany               = errors.New("models: there is no company for that company_id")
 	ErrCouldNotConvertToJSON   = errors.New("models: could not convert value to JSON")
+	ErrUseAlreadyApplied       = errors.New("models: user has already applied to the job post")
 )
