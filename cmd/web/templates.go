@@ -16,9 +16,10 @@ type JobPostsFilterData struct {
 	IsSearchResultPage  bool
 }
 type templateData struct {
-	CurrentYear int
-	Flash       string
-	JobPosts    []models.JobPost
+	CurrentYear  int
+	Flash        string
+	ErrorMessage string
+	JobPosts     []models.JobPost
 	JobPostsFilterData
 	Form            any
 	JobPost         models.JobPost
