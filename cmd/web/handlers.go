@@ -46,21 +46,11 @@ type deleteJobPostForm struct {
 	Jpid string
 }
 
-// type JopPostFields struct {
-// 	Position     string
-// 	Description  string
-// 	Contract     string
-// 	Location     string
-// 	Requirements struct {
-// 		Content string
-// 		Items   []string
-// 	}
-// 	Role struct {
-// 		Content string
-// 		Items   []string
-// 	}
-// 	validator.Validator
-// }
+type applyJobPostForm struct {
+	CV                  string `form:"cv"`
+	CoverLetter         string `form:"coverletter"`
+	validator.Validator `form:"-"`
+}
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte("main page, here i'll put the list of job posts"))
@@ -239,7 +229,7 @@ func (app *application) companySignUpPost(w http.ResponseWriter, r *http.Request
 	// 	return
 	// }
 
-	s, err := processFile(r)
+	s, err := processSVGFile(r)
 	if err != nil {
 		// app.serverError(w, r, err)
 		s = models.DefaultCompanyIcon
@@ -805,22 +795,6 @@ func (app *application) userEditJobPostPost(w http.ResponseWriter, r *http.Reque
 
 	// userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
 
-	// {
-	//TODO I have to put the data in the DB
-	//* for that I can use the authenticatedUserID from user session, with that, query the -users_employers- table and get the -company_id- value
-	//* then, with that value, check the -companies- table to see if there is a company for that ID, if there is one, we can proceed, but if not, we must return an error
-
-	// with the data from user and the company id, I can to the following:
-	//		insert a new record on requirements table (req_description, req_list)
-	// 			get the id of that last record inserted in DB
-	//		insert a new record on roles table (role_description, role_list)
-	// 			get the id of that last record inserted in DB
-	// put all data submitted by user, along with company_id and the last two values for req_id, and role_id
-
-	// with that, it's been put on the DB and we can get it from company account page and the home page
-
-	// err = app.jobPosts.InsertJobPost(userID, JP)
-	//??? err = app.jobPosts.EditJobPost(JP.ID, JP.CompanyID, JP.Requirements.ReqID, JP.Role.RoleID, JP)
 	err = app.jobPosts.EditJobPost(JP)
 	if err != nil {
 		app.serverError(w, r, err)
@@ -829,4 +803,113 @@ func (app *application) userEditJobPostPost(w http.ResponseWriter, r *http.Reque
 
 	http.Redirect(w, r, "/user/account", http.StatusSeeOther)
 
+}
+
+func (app *application) applyJobPostGet(w http.ResponseWriter, r *http.Request) {
+
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	jobPost, err := app.jobPosts.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.JobPost = jobPost
+	data.Form = applyJobPostForm{}
+	app.render(w, r, 200, "applyJobPost.tmpl.html", data)
+}
+
+func (app *application) applyJobPostPost(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		app.notFound(w)
+		return
+	}
+
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	user, err := app.users.Get(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	var form applyJobPostForm
+
+	path, fileName, err := processPDFFile(r, "cv", user.Name)
+	if err != nil {
+		fmt.Println("handlers.go 869")
+		fmt.Println(err.Error())
+		fmt.Println()
+		if err.Error() != "http: no such file" {
+			app.serverError(w, r, err)
+			return
+		}
+		// return
+	}
+	fmt.Println(path)
+
+	// coverletter := r.PostFormValue("coverletter")
+	coverletter := r.PostForm.Get("coverletter")
+	fmt.Println(r.PostForm)
+	fmt.Println(coverletter)
+	form = applyJobPostForm{
+		// CV:          file,
+		CoverLetter: coverletter,
+	}
+
+	fmt.Println(form.CoverLetter)
+
+	form.CheckField(validator.Matches(form.CoverLetter, validator.LetterSpacesPunctuationExtendedNumbersRegex), "coverLetter", "Your cover letter can only contain letters, numbers, spaces and punctuation (, . ' ’ \" & - ( ) /)")
+
+	if err != nil {
+		form.CheckField(err.Error() != "http: no such file", "cv", "This field is required.")
+
+	}
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		jobPost, err := app.jobPosts.Get(id)
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.notFound(w)
+			} else {
+				app.serverError(w, r, err)
+			}
+			return
+		}
+
+		data.Form = form
+		data.JobPost = jobPost
+		app.render(w, r, http.StatusUnprocessableEntity, "applyJobPost.tmpl.html", data)
+		return
+	}
+
+	// fmt.Fprintf(w, "File uploaded successfully: %s | %s\n", path, fileName)
+
+	err = app.jobPosts.InsertJobApplication(id, userID, fileName, path, coverletter)
+
+	if err != nil {
+		if errors.Is(err, models.ErrUseAlreadyApplied) {
+			app.sessionManager.Put(r.Context(), "errorMessage", "You have already applied to this Job Post before.")
+			// http.Redirect(w, r, "/jopbost/apply/"+strconv.Itoa(id), 303)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+	}
+	app.sessionManager.Put(r.Context(), "flash", "You have successfully applied to this Job Post.")
+	http.Redirect(w, r, "/jobpost/view/"+strconv.Itoa(id), http.StatusSeeOther)
 }
