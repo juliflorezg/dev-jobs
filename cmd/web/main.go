@@ -4,6 +4,8 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"flag"
+	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -28,8 +30,23 @@ type application struct {
 }
 
 func main() {
+
+	databaseUrl := os.Getenv("DATABASE_URL")
+	if databaseUrl == "" {
+		// content, err := ioutil.ReadFile(os.Getenv("DATABASE_URL_FILE"))
+		// content, err := os.ReadFile(os.Getenv("DATABASE_URL_FILE"))
+		content, err := os.ReadFile(os.Getenv("SECRET_URL_PATH"))
+		if err != nil {
+			log.Fatal(err)
+		}
+		databaseUrl = string(content)
+	}
+
+	fmt.Println("database URL:::", databaseUrl)
+
 	addr := flag.String("port", ":8080", "HTTP Network Address")
-	dsn := flag.String("dsn", "web:Web24pass_@/devjobs?parseTime=true", "MySQL data source name")
+
+	dsn := flag.String("dsn", databaseUrl, "MySQL data source name")
 
 	flag.Parse()
 
@@ -88,18 +105,25 @@ func main() {
 }
 
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		db.Close()
-		return nil, err
+
+	var db *sql.DB
+	var err error
+
+	for i := 0; i < 10; i++ { // Try up to 10 times
+		db, err = sql.Open("mysql", dsn)
+		if err == nil {
+			err = db.Ping()
+			if err == nil {
+				return db, nil
+			}
+		}
+		log.Println("Failed to connect to database. Retrying...", err)
+		time.Sleep(2 * time.Second)
 	}
 
-	err = db.Ping()
-	if err != nil {
+	if db != nil {
 		db.Close()
-		return nil, err
 	}
-
-	return db, nil
+	return nil, err
 
 }
